@@ -13,6 +13,7 @@ class _StartingState extends State<Starting> {
       child: Scaffold(
         backgroundColor: Colors.amber[100],
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SpinKitFadingCube(
               color: Colors.redAccent,
