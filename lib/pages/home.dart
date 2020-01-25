@@ -10,8 +10,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   String timeUpdated;
-  bool isStarted = false;
-  String startStop = 'empezar';
+
   Timer timer;
   int secondCounter = 0;
   int salaryPerHour = 100;
@@ -64,21 +63,21 @@ class _HomeState extends State<Home> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              RaisedButton.icon(
-                onPressed: () {
-                  setState(() {
-                    isStarted = !isStarted;
-                    startStop = isStarted ? 'finalizar' : 'empezar';
-                  });
-                  if (isStarted) {
-                    updateTime();
-                  } else {
-                    timer.cancel();
-                  }
-                },
-                label: Text(startStop),
-                icon: Icon(Icons.update),
-              ),
+              // RaisedButton.icon(
+              //   onPressed: () {
+              //     setState(() {
+              //       isStarted = !isStarted;
+              //       startStop = isStarted ? 'finalizar' : 'empezar';
+              //     });
+              //     if (isStarted) {
+              //       updateTime();
+              //     } else {
+              //       timer.cancel();
+              //     }
+              //   },
+              //   label: Text(startStop),
+              //   icon: Icon(Icons.update),
+              // ),
               Text(timeUpdated),
               SizedBox(height: 30),
               Text(secondCounter.toString()),

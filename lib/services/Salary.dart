@@ -1,9 +1,10 @@
 class Salary {
   int fixedAmount = 0;
-  int salaryPerHour;
   String firstDate;
   String lastDate;
   String title;
   String description;
-  double currentSalary;
+  double totalSalary;
+
+  Salary({this.title, this.description});
 }
