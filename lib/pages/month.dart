@@ -70,41 +70,47 @@ class _MonthState extends State<Month> {
               //!salario monto fijo
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                TextField(
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                      icon: Icon(Icons.monetization_on),
-                      // hintText: '...',
-                      labelText: 'Salario monto fijo',
-                      labelStyle: TextStyle(color: Colors.redAccent),
-                      border: OutlineInputBorder()),
-                  onSubmitted: (input) {
-                    // salaryPerHour = int.parse(input);
-                    // print(salaryPerHour);
-                  },
+                Container(
+                  width: 200,
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                        icon: Icon(Icons.monetization_on),
+                        // hintText: '...',
+                        labelText: 'Salario monto fijo',
+                        labelStyle: TextStyle(color: Colors.redAccent),
+                        border: OutlineInputBorder()),
+                    onSubmitted: (input) {
+                      // salaryPerHour = int.parse(input);
+                      // print(salaryPerHour);
+                    },
+                  ),
                 ),
-                TextField(
-                  //!Salario por hora
-                  keyboardType: TextInputType.number,
-                  // autofocus: true,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                      icon: Icon(Icons.monetization_on),
-                      // hintText: '...',
-                      labelText: 'Salario por hora',
-                      labelStyle: TextStyle(color: Colors.redAccent),
-                      border: OutlineInputBorder()),
-                  onSubmitted: (input) {
-                    // salaryPerHour = int.parse(input);
-                    // print(salaryPerHour);
-                  },
+                Container(
+                  width: 200,
+                  child: TextField(
+                    //!Salario por hora
+                    keyboardType: TextInputType.number,
+                    // autofocus: true,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                        icon: Icon(Icons.monetization_on),
+                        // hintText: '...',
+                        labelText: 'Salario por hora',
+                        labelStyle: TextStyle(color: Colors.redAccent),
+                        border: OutlineInputBorder()),
+                    onSubmitted: (input) {
+                      // salaryPerHour = int.parse(input);
+                      // print(salaryPerHour);
+                    },
+                  ),
                 ),
-                RaisedButton(
-                  onPressed: () {},
-                  child: Text(
-                      'empezar'), //TODO: cambiar por el metodo empezar del a page home
-                ),
+                // RaisedButton(
+                //   onPressed: () {},
+                //   child: Text(
+                //       'empezar'), //TODO: cambiar por el metodo empezar del a page home
+                // ),
               ],
             ),
             Divider(
@@ -112,6 +118,8 @@ class _MonthState extends State<Month> {
               color: Colors.redAccent,
             ),
             ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
               itemCount: incomes.length,
               itemBuilder: (context, index) {
                 // TODO:metodo para mostrar los ingresos diarios
