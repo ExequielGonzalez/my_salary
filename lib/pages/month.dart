@@ -23,6 +23,7 @@ class _MonthState extends State<Month> {
 
   void updateTime() {
     timer = Timer.periodic(Duration(seconds: 1), (t) {
+      incomes[incomes.length].updateSalary(secondCounter);
       setState(() {
         secondCounter++;
       });
@@ -71,7 +72,6 @@ class _MonthState extends State<Month> {
               children: <Widget>[
                 TextField(
                   keyboardType: TextInputType.number,
-                  autofocus: true,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                       icon: Icon(Icons.monetization_on),
@@ -87,7 +87,7 @@ class _MonthState extends State<Month> {
                 TextField(
                   //!Salario por hora
                   keyboardType: TextInputType.number,
-                  autofocus: true,
+                  // autofocus: true,
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                       icon: Icon(Icons.monetization_on),

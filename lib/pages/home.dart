@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mi_sueldo/services/Salary.dart';
 import 'package:mi_sueldo/services/myTymer.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
@@ -9,31 +10,18 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String timeUpdated;
+  final _formKey = GlobalKey<FormState>(); //para el popup
 
-  Timer timer;
-  int secondCounter = 0;
-  int salaryPerHour = 100;
-  double salary = 0;
+  String salaryTitle = 'a';
+  String salaryDecription = 'b';
 
-  // myTimer timer = myTimer(interval: 1);
+  List<Salary> salaries = [];
 
-  void updateTime() {
-    timer = Timer.periodic(Duration(seconds: 1), (t) {
-      setState(() {
-        timeUpdated = formatTime();
-        secondCounter++;
-      });
-    });
-  }
+  Salary salary;
 
-  String formatTime() {
-    DateTime time = DateTime.parse(DateTime.now().toString());
-    return DateFormat.Hms().format(time);
-  }
-
-  double getSalary() {
-    return (secondCounter / 3600) * salaryPerHour;
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    super.dispose();
   }
 
   @override
@@ -47,7 +35,73 @@ class _HomeState extends State<Home> {
             style: TextStyle(fontSize: 40),
           ),
           onPressed: () {
-            Navigator.pushNamed(context, '/month');
+            // Navigator.pushNamed(context, '/month');
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    content: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              onChanged: (text) {
+                                print(text); //!borrar
+                                salaryTitle = text;
+                              },
+                              keyboardType: TextInputType.text,
+                              textAlign: TextAlign.center,
+                              decoration: InputDecoration(
+                                labelText: 'Título',
+                                labelStyle: TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              onChanged: (text) {
+                                print(text); //!borrar
+                                salaryDecription = text;
+                              },
+                              keyboardType: TextInputType.text,
+                              // autofocus: true,
+                              textAlign: TextAlign.center,
+                              decoration: InputDecoration(
+                                labelText: 'Descripción',
+                                labelStyle: TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: RaisedButton(
+                              child: Text("Crear"),
+                              onPressed: () {
+                                if (_formKey.currentState.validate()) {
+                                  _formKey.currentState.save();
+                                  print('$salaryTitle - $salaryDecription');
+                                  setState(() {
+                                    salary = Salary(
+                                        title: salaryTitle,
+                                        description: salaryDecription);
+                                    salaries.add(salary);
+                                  });
+                                  salaryTitle = '';
+                                  salaryDecription = '';
+                                  Navigator.pop(context, []);
+                                }
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                });
           },
         ),
         appBar: AppBar(backgroundColor: Colors.redAccent, actions: <Widget>[
@@ -55,43 +109,105 @@ class _HomeState extends State<Home> {
             icon: Icon(Icons.settings),
             tooltip: 'configuración',
             onPressed: () {
+              setState(() {
+                //TODO: implementar
+              });
               Navigator.pushNamed(context, '/config');
             },
           ),
         ]),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // RaisedButton.icon(
-              //   onPressed: () {
-              //     setState(() {
-              //       isStarted = !isStarted;
-              //       startStop = isStarted ? 'finalizar' : 'empezar';
-              //     });
-              //     if (isStarted) {
-              //       updateTime();
-              //     } else {
-              //       timer.cancel();
-              //     }
-              //   },
-              //   label: Text(startStop),
-              //   icon: Icon(Icons.update),
-              // ),
-              Text(timeUpdated),
-              SizedBox(height: 30),
-              Text(secondCounter.toString()),
-              SizedBox(height: 30),
-              Text(getSalary().toString()),
-            ],
-          ),
-        ));
+        body: salaries?.isEmpty ?? true
+            ? Center(child: Text(''))
+            : ListView.builder(
+                scrollDirection: Axis.vertical,
+                // shrinkWrap: true,
+                itemCount: salaries.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
+                    child: Card(
+                      child: ListTile(
+                        title: Text(salaries[index].title),
+                        onTap: () {
+                          //TODO: ver como ir a la pagina month
+                          Navigator.pushNamed(context, '/month',
+                              arguments: Salary(
+                                  title: salaries[index].title,
+                                  description: salaries[index].description));
+                        },
+                        subtitle: Text(salaries[index].description),
+                        onLongPress: () {
+                          //!**********Borrar Ingresos*****************!
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                              '¿Desea eliminar este ingreso?'),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: <Widget>[
+                                              RaisedButton(
+                                                child: Text('Eliminar'),
+                                                onPressed: () {
+                                                  if (_formKey.currentState
+                                                      .validate()) {
+                                                    _formKey.currentState
+                                                        .save();
+                                                    setState(() {
+                                                      salaries.removeAt(index);
+                                                    });
+                                                    Navigator.pop(context, []);
+                                                  }
+                                                },
+                                              ),
+                                              RaisedButton(
+                                                child: Text(
+                                                  'Cancelar',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                onPressed: () {
+                                                  if (_formKey.currentState
+                                                      .validate()) {
+                                                    _formKey.currentState
+                                                        .save();
+
+                                                    Navigator.pop(context, []);
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              });
+                        }, //!************Borrar Ingresos***************!
+                      ),
+                    ),
+                  );
+                },
+              ));
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    timeUpdated = formatTime();
   }
 }

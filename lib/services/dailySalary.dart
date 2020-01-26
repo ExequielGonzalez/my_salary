@@ -19,7 +19,7 @@ class DailySalary extends Salary {
     timeEnded = timer.getTime();
   }
 
-  void updateSalary() {
-    currentSalary = salaryPerHour * 1.0;
+  void updateSalary(int secondCounter) {
+    currentSalary = (secondCounter * salaryPerHour) / 3600;
   }
 }
