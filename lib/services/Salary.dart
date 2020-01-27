@@ -4,7 +4,7 @@ class Salary {
   String lastDate;
   String title;
   String description;
-  double totalSalary;
+  double totalSalary = 0;
 
   Salary({this.title, this.description});
 }

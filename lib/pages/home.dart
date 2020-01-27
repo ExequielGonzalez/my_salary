@@ -49,7 +49,6 @@ class _HomeState extends State<Home> {
                             padding: EdgeInsets.all(8.0),
                             child: TextFormField(
                               onChanged: (text) {
-                                print(text); //!borrar
                                 salaryTitle = text;
                               },
                               keyboardType: TextInputType.text,
@@ -64,7 +63,6 @@ class _HomeState extends State<Home> {
                             padding: EdgeInsets.all(8.0),
                             child: TextFormField(
                               onChanged: (text) {
-                                print(text); //!borrar
                                 salaryDecription = text;
                               },
                               keyboardType: TextInputType.text,

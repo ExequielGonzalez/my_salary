@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mi_sueldo/services/dailySalary.dart';
+import 'package:mi_sueldo/services/Salary.dart';
 
 class Month extends StatefulWidget {
   @override
@@ -9,8 +10,10 @@ class Month extends StatefulWidget {
 }
 
 class _MonthState extends State<Month> {
+  Salary currentSalary;
+
   List<DailySalary> incomes = [];
-  int salaryPerHour;
+  int salaryPerHour = 1;
   String currentDate;
   String timeStarted;
 
@@ -21,48 +24,48 @@ class _MonthState extends State<Month> {
 
   DailySalary income; //aux variable
 
-  void updateTime() {
+  void updateEverything() {
     timer = Timer.periodic(Duration(seconds: 1), (t) {
-      incomes[incomes.length].updateSalary(secondCounter);
       setState(() {
-        secondCounter++;
+        incomes.last.updateSalary();
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    currentSalary = ModalRoute.of(context).settings.arguments;
     return Scaffold(
         backgroundColor: Colors.amber[100],
         appBar: AppBar(
-          title: Text(
-              'month'), //TODO:cambiar este nombre por la fecha de inicio y final
+          title: Text('${currentSalary.title}'),
           backgroundColor: Colors.redAccent,
           centerTitle: true,
         ),
         body: Column(
           children: <Widget>[
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Text(r'$XXXX'), //TODO: agregar el salario total acumulado
+                Text('\$${currentSalary.totalSalary}'),
                 RaisedButton(
                   onPressed: () {
-                    income = DailySalary(
-                        salaryPerHour); //TODO: agregar nuevos dias de trabajo
+                    if (!isStarted) {
+                      setState(() {
+                        income = DailySalary(salaryPerHour);
+                        incomes.add(income);
+                      });
+                    } else {
+                      incomes.last.finishDayWork();
+                    }
                     setState(() {
-                      incomes.add(income);
                       isStarted = !isStarted;
                       startStop = isStarted ? 'finalizar' : 'empezar';
                     });
-                    if (isStarted) {
-                      updateTime();
-                    } else {
-                      timer.cancel();
-                    }
                   },
                   child: Text(
                       startStop), //TODO: cambiar por el metodo empezar del a page home
+                  //!revisar en el github, la primer version
                 ),
               ],
             ),
@@ -81,9 +84,8 @@ class _MonthState extends State<Month> {
                         labelText: 'Salario monto fijo',
                         labelStyle: TextStyle(color: Colors.redAccent),
                         border: OutlineInputBorder()),
-                    onSubmitted: (input) {
-                      // salaryPerHour = int.parse(input);
-                      // print(salaryPerHour);
+                    onChanged: (text) {
+                      currentSalary.fixedAmount = int.parse(text);
                     },
                   ),
                 ),
@@ -100,17 +102,11 @@ class _MonthState extends State<Month> {
                         labelText: 'Salario por hora',
                         labelStyle: TextStyle(color: Colors.redAccent),
                         border: OutlineInputBorder()),
-                    onSubmitted: (input) {
-                      // salaryPerHour = int.parse(input);
-                      // print(salaryPerHour);
+                    onChanged: (text) {
+                      salaryPerHour = int.parse(text);
                     },
                   ),
                 ),
-                // RaisedButton(
-                //   onPressed: () {},
-                //   child: Text(
-                //       'empezar'), //TODO: cambiar por el metodo empezar del a page home
-                // ),
               ],
             ),
             Divider(
@@ -126,12 +122,17 @@ class _MonthState extends State<Month> {
                 return Card(
                   child: Row(
                     children: <Widget>[
-                      Text('\$ ${incomes[index].currentSalary}'),
-                      ListTile(
-                        //  onTap: ,no es necesario que hagan nada cuando se presionen
-                        title: Text('${incomes[index].currentDate}'),
-                        subtitle: Text(
-                            '${incomes[index].timeStarted} - ${incomes[index].timeEnded}'),
+                      Container(
+                          width: 100,
+                          child: Text('\$ ${incomes[index].currentSalary}',
+                              style: TextStyle())),
+                      Expanded(
+                        child: ListTile(
+                          //  onTap: ,no es necesario que hagan nada cuando se presionen
+                          title: Text('${incomes[index].currentDate}'),
+                          subtitle: Text(
+                              '${incomes[index].timeStarted} - ${incomes[index].timeEnded}'),
+                        ),
                       ),
                       IconButton(
                         icon: Icon(Icons.delete),
@@ -148,5 +149,19 @@ class _MonthState extends State<Month> {
             )
           ],
         ));
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    updateEverything();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    timer.cancel();
   }
 }
