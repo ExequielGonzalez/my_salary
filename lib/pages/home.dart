@@ -35,7 +35,6 @@ class _HomeState extends State<Home> {
             style: TextStyle(fontSize: 40),
           ),
           onPressed: () {
-            // Navigator.pushNamed(context, '/month');
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -126,9 +125,10 @@ class _HomeState extends State<Home> {
                     child: Card(
                       child: ListTile(
                         title: Text(salaries[index].title),
-                        onTap: () {
+                        onTap: () async {
                           //TODO: ver como ir a la pagina month
-                          Navigator.pushNamed(context, '/month',
+                          salaries[index] = await Navigator.pushNamed(
+                              context, '/month',
                               arguments: Salary(
                                   title: salaries[index].title,
                                   description: salaries[index].description));

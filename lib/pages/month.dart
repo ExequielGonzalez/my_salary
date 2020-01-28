@@ -27,7 +27,8 @@ class _MonthState extends State<Month> {
   void updateEverything() {
     timer = Timer.periodic(Duration(seconds: 1), (t) {
       setState(() {
-        incomes.last.updateSalary();
+        currentSalary.last().updateSalary();
+        currentSalary.getTotalSalary();
       });
     });
   }
@@ -38,25 +39,34 @@ class _MonthState extends State<Month> {
     return Scaffold(
         backgroundColor: Colors.amber[100],
         appBar: AppBar(
-          title: Text('${currentSalary.title}'),
-          backgroundColor: Colors.redAccent,
-          centerTitle: true,
-        ),
+            title: Text('${currentSalary.title}'),
+            backgroundColor: Colors.redAccent,
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context, currentSalary);
+              },
+            )),
         body: Column(
           children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                Text('\$${currentSalary.totalSalary}'),
+                // Text('\$${currentSalary.getTotalSalary().toString()}'),
+                Text('\$${currentSalary.getTotalSalary().toString()}'),
                 RaisedButton(
                   onPressed: () {
                     if (!isStarted) {
                       setState(() {
                         income = DailySalary(salaryPerHour);
-                        incomes.add(income);
+                        currentSalary.addIncome(income);
                       });
                     } else {
-                      incomes.last.finishDayWork();
+                      currentSalary.last().finishDayWork();
+                      // setState(() {
+                      //   currentSalary.getTotalSalary();
+                      // });
                     }
                     setState(() {
                       isStarted = !isStarted;
@@ -113,39 +123,48 @@ class _MonthState extends State<Month> {
               height: 50,
               color: Colors.redAccent,
             ),
-            ListView.builder(
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-              itemCount: incomes.length,
-              itemBuilder: (context, index) {
-                // TODO:metodo para mostrar los ingresos diarios
-                return Card(
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                          width: 100,
-                          child: Text('\$ ${incomes[index].currentSalary}',
-                              style: TextStyle())),
-                      Expanded(
-                        child: ListTile(
-                          //  onTap: ,no es necesario que hagan nada cuando se presionen
-                          title: Text('${incomes[index].currentDate}'),
-                          subtitle: Text(
-                              '${incomes[index].timeStarted} - ${incomes[index].timeEnded}'),
+            Flexible(
+              child: ListView.builder(
+                addRepaintBoundaries: true,
+                scrollDirection: Axis.vertical,
+                reverse: true, //la mas nueva arriba
+                addAutomaticKeepAlives: true,
+
+                shrinkWrap: true,
+                itemCount: currentSalary.length(),
+                itemBuilder: (context, index) {
+                  // TODO:metodo para mostrar los ingresos diarios
+                  return Card(
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                            width: 100,
+                            child: Text(
+                                '\$ ${currentSalary.index(index).currentSalary}',
+                                style: TextStyle())),
+                        Expanded(
+                          child: ListTile(
+                            //  onTap: ,no es necesario que hagan nada cuando se presionen
+                            // title: Text('${incomes[index].currentDate}'),
+                            title: Text(
+                                '${currentSalary.index(index).currentDate}'),
+                            subtitle: Text(
+                                '${currentSalary.index(index).timeStarted} - ${currentSalary.index(index).timeEnded}'),
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          setState(() {
-                            incomes.remove(index);
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              },
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            setState(() {
+                              currentSalary.remove(index);
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             )
           ],
         ));
@@ -163,5 +182,6 @@ class _MonthState extends State<Month> {
     // TODO: implement dispose
     super.dispose();
     timer.cancel();
+    Navigator.pop(context, currentSalary);
   }
 }
