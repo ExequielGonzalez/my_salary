@@ -172,16 +172,16 @@ class _MonthState extends State<Month> {
 
   @override
   void initState() {
+    updateEverything();
     // TODO: implement initState
     super.initState();
-    updateEverything();
   }
 
   @override
   void dispose() {
+    timer.cancel();
+    // Navigator.pop(context, currentSalary);
     // TODO: implement dispose
     super.dispose();
-    timer.cancel();
-    Navigator.pop(context, currentSalary);
   }
 }

@@ -129,7 +129,8 @@ class _HomeState extends State<Home> {
                           //TODO: ver como ir a la pagina month
                           dynamic result = await Navigator.of(context)
                               .pushNamed('/month', arguments: salaries[index]);
-                          salaries[index] = result;
+                          salaries[index] =
+                              result; //con esta linea se recibe lo de la page month
                         },
                         subtitle: Text(salaries[index].description),
                         onLongPress: () {
