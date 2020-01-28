@@ -127,11 +127,9 @@ class _HomeState extends State<Home> {
                         title: Text(salaries[index].title),
                         onTap: () async {
                           //TODO: ver como ir a la pagina month
-                          salaries[index] = await Navigator.pushNamed(
-                              context, '/month',
-                              arguments: Salary(
-                                  title: salaries[index].title,
-                                  description: salaries[index].description));
+                          dynamic result = await Navigator.of(context)
+                              .pushNamed('/month', arguments: salaries[index]);
+                          salaries[index] = result;
                         },
                         subtitle: Text(salaries[index].description),
                         onLongPress: () {
