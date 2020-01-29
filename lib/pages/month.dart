@@ -36,138 +36,142 @@ class _MonthState extends State<Month> {
   @override
   Widget build(BuildContext context) {
     currentSalary = ModalRoute.of(context).settings.arguments;
-    return Scaffold(
-        backgroundColor: Colors.amber[100],
-        appBar: AppBar(
-            title: Text('${currentSalary.title}'),
-            backgroundColor: Colors.redAccent,
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context, currentSalary);
-              },
-            )),
-        body: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                // Text('\$${currentSalary.getTotalSalary().toString()}'),
-                Text('\$${currentSalary.getTotalSalary().toString()}'),
-                RaisedButton(
-                  onPressed: () {
-                    if (!isStarted) {
+    return WillPopScope(
+      onWillPop: () {}, //el boton back no hace nada
+      child: Scaffold(
+          backgroundColor: Colors.amber[100],
+          appBar: AppBar(
+              title: Text('${currentSalary.title}'),
+              backgroundColor: Colors.redAccent,
+              centerTitle: true,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context, currentSalary);
+                },
+              )),
+          body: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  // Text('\$${currentSalary.getTotalSalary().toString()}'),
+                  Text('\$${currentSalary.getTotalSalary().toString()}'),
+                  RaisedButton(
+                    onPressed: () {
+                      if (!isStarted) {
+                        setState(() {
+                          income = DailySalary(salaryPerHour);
+                          currentSalary.addIncome(income);
+                        });
+                      } else {
+                        currentSalary.last().finishDayWork();
+                        // setState(() {
+                        //   currentSalary.getTotalSalary();
+                        // });
+                      }
                       setState(() {
-                        income = DailySalary(salaryPerHour);
-                        currentSalary.addIncome(income);
+                        isStarted = !isStarted;
+                        startStop = isStarted ? 'finalizar' : 'empezar';
                       });
-                    } else {
-                      currentSalary.last().finishDayWork();
-                      // setState(() {
-                      //   currentSalary.getTotalSalary();
-                      // });
-                    }
-                    setState(() {
-                      isStarted = !isStarted;
-                      startStop = isStarted ? 'finalizar' : 'empezar';
-                    });
-                  },
-                  child: Text(
-                      startStop), //TODO: cambiar por el metodo empezar del a page home
-                  //!revisar en el github, la primer version
-                ),
-              ],
-            ),
-            Row(
-              //!salario monto fijo
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                  width: 200,
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
+                    },
+                    child: Text(
+                        startStop), //TODO: cambiar por el metodo empezar del a page home
+                    //!revisar en el github, la primer version
+                  ),
+                ],
+              ),
+              Row(
+                //!salario monto fijo
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    width: 200,
+                    child: TextField(
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
                         icon: Icon(Icons.monetization_on),
-                        // hintText: '...',
+                        hintText: '${currentSalary.fixedAmount}',
                         labelText: 'Salario monto fijo',
                         labelStyle: TextStyle(color: Colors.redAccent),
-                        border: OutlineInputBorder()),
-                    onChanged: (text) {
-                      currentSalary.fixedAmount = int.parse(text);
-                    },
-                  ),
-                ),
-                Container(
-                  width: 200,
-                  child: TextField(
-                    //!Salario por hora
-                    keyboardType: TextInputType.number,
-                    // autofocus: true,
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                        icon: Icon(Icons.monetization_on),
-                        // hintText: '...',
-                        labelText: 'Salario por hora',
-                        labelStyle: TextStyle(color: Colors.redAccent),
-                        border: OutlineInputBorder()),
-                    onChanged: (text) {
-                      salaryPerHour = int.parse(text);
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Divider(
-              height: 50,
-              color: Colors.redAccent,
-            ),
-            Flexible(
-              child: ListView.builder(
-                addRepaintBoundaries: true,
-                scrollDirection: Axis.vertical,
-                reverse: true, //la mas nueva arriba
-                addAutomaticKeepAlives: true,
-
-                shrinkWrap: true,
-                itemCount: currentSalary.length(),
-                itemBuilder: (context, index) {
-                  // TODO:metodo para mostrar los ingresos diarios
-                  return Card(
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                            width: 100,
-                            child: Text(
-                                '\$ ${currentSalary.index(index).currentSalary}',
-                                style: TextStyle())),
-                        Expanded(
-                          child: ListTile(
-                            //  onTap: ,no es necesario que hagan nada cuando se presionen
-                            // title: Text('${incomes[index].currentDate}'),
-                            title: Text(
-                                '${currentSalary.index(index).currentDate}'),
-                            subtitle: Text(
-                                '${currentSalary.index(index).timeStarted} - ${currentSalary.index(index).timeEnded}'),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            setState(() {
-                              currentSalary.remove(index);
-                            });
-                          },
-                        ),
-                      ],
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (text) {
+                        currentSalary.fixedAmount = int.parse(text);
+                      },
                     ),
-                  );
-                },
+                  ),
+                  Container(
+                    width: 200,
+                    child: TextField(
+                      //!Salario por hora
+                      keyboardType: TextInputType.number,
+                      // autofocus: true,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.monetization_on),
+                          // hintText: '...',
+                          labelText: 'Salario por hora',
+                          labelStyle: TextStyle(color: Colors.redAccent),
+                          border: OutlineInputBorder()),
+                      onChanged: (text) {
+                        salaryPerHour = int.parse(text);
+                      },
+                    ),
+                  ),
+                ],
               ),
-            )
-          ],
-        ));
+              Divider(
+                height: 50,
+                color: Colors.redAccent,
+              ),
+              Flexible(
+                child: ListView.builder(
+                  addRepaintBoundaries: true,
+                  scrollDirection: Axis.vertical,
+                  reverse: true, //la mas nueva arriba
+                  addAutomaticKeepAlives: true,
+
+                  shrinkWrap: true,
+                  itemCount: currentSalary.length(),
+                  itemBuilder: (context, index) {
+                    // TODO:metodo para mostrar los ingresos diarios
+                    return Card(
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                              width: 100,
+                              child: Text(
+                                  '\$ ${currentSalary.index(index).currentSalary}',
+                                  style: TextStyle())),
+                          Expanded(
+                            child: ListTile(
+                              //  onTap: ,no es necesario que hagan nada cuando se presionen
+                              // title: Text('${incomes[index].currentDate}'),
+                              title: Text(
+                                  '${currentSalary.index(index).currentDate}'),
+                              subtitle: Text(
+                                  '${currentSalary.index(index).timeStarted} - ${currentSalary.index(index).timeEnded}'),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              setState(() {
+                                currentSalary.remove(index);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              )
+            ],
+          )),
+    );
   }
 
   @override
@@ -184,4 +188,31 @@ class _MonthState extends State<Month> {
     // TODO: implement dispose
     super.dispose();
   }
+
+  Future<bool> _onBackPressed() {
+    // return Navigator.pop(context, currentSalary) ?? false;
+    // return showDialog(
+    //       context: context,
+    //       builder: (context) => new AlertDialog(
+    //         title: new Text('Are you sure?'),
+    //         content: new Text('Do you want to exit an App'),
+    //         actions: <Widget>[
+    //           new GestureDetector(
+    //             onTap: () => Navigator.of(context).pop(false),
+    //             child: Text("NO"),
+    //           ),
+    //           SizedBox(height: 16),
+    //           new GestureDetector(
+    //             onTap: () => Navigator.of(context).pop(true),
+    //             child: Text("YES"),
+    //           ),
+    //         ],
+    //       ),
+    //     ) ??
+    //     false;
+  }
+
+  void _moveToSignInScreen(BuildContext context) =>
+      Navigator.pushReplacementNamed(context, '/home',
+          arguments: currentSalary);
 }

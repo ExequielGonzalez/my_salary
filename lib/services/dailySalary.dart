@@ -5,12 +5,12 @@ import 'dart:async';
 
 class DailySalary extends Salary {
   MyTimer timer;
-  String timeStarted;
-  String timeEnded = 'En curso...';
-  String currentDate;
-  int salaryPerHour;
-  double currentSalary = 0;
-  int secondsWorked = 0;
+  String timeStarted; //!
+  String timeEnded = 'En curso...'; //!
+  String currentDate; //!
+  int salaryPerHour; //!
+  double currentSalary = 0; //!
+  int secondsWorked = 0; //!
   Timer internalTimer;
 
   DailySalary(salaryPerHour) {
