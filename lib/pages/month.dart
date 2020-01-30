@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:mi_sueldo/services/dailySalary.dart';
 import 'package:mi_sueldo/services/Salary.dart';
 
@@ -12,7 +13,7 @@ class Month extends StatefulWidget {
 class _MonthState extends State<Month> {
   Salary currentSalary;
 
-  List<DailySalary> incomes = [];
+  // List<DailySalary> incomes = [];
   int salaryPerHour = 1;
   String currentDate;
   String timeStarted;
@@ -26,16 +27,19 @@ class _MonthState extends State<Month> {
 
   void updateEverything() {
     timer = Timer.periodic(Duration(seconds: 1), (t) {
-      setState(() {
-        currentSalary.last().updateSalary();
-        currentSalary.getTotalSalary();
-      });
+      if (isStarted) {
+        setState(() {
+          currentSalary.last().updateSalary();
+          currentSalary.getTotalSalary();
+        });
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     currentSalary = ModalRoute.of(context).settings.arguments;
+    salaryPerHour = currentSalary.last().salaryPerHour;
     return WillPopScope(
       onWillPop: () {}, //el boton back no hace nada
       child: Scaffold(
@@ -64,6 +68,7 @@ class _MonthState extends State<Month> {
                           income = DailySalary(salaryPerHour);
                           currentSalary.addIncome(income);
                         });
+                        // addDailySalaryToTheDataBase(income);//!..............
                       } else {
                         currentSalary.last().finishDayWork();
                         // setState(() {
@@ -111,7 +116,7 @@ class _MonthState extends State<Month> {
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                           icon: Icon(Icons.monetization_on),
-                          // hintText: '...',
+                          hintText: '${currentSalary.last().salaryPerHour}',
                           labelText: 'Salario por hora',
                           labelStyle: TextStyle(color: Colors.redAccent),
                           border: OutlineInputBorder()),
@@ -177,6 +182,7 @@ class _MonthState extends State<Month> {
   @override
   void initState() {
     updateEverything();
+    // incomes = readListToTheDataBase();
     // TODO: implement initState
     super.initState();
   }
@@ -185,9 +191,31 @@ class _MonthState extends State<Month> {
   void dispose() {
     timer.cancel();
     // Navigator.pop(context, currentSalary);
+    currentSalary.last().finishDayWork();
     // TODO: implement dispose
+    // final salaryBox = Hive.box('DailySalary');
+    // salaryBox.clear();
+
     super.dispose();
   }
+
+  void addDailySalaryToTheDataBase(DailySalary income) {
+    // final salaryBox = Hive.box('DailySalary');
+    // salaryBox.add(income);
+    // salaryBox.
+  }
+
+  // List<DailySalary> readListToTheDataBase() {
+  // List<DailySalary> auxList = [];
+  // DailySalary auxSalary;
+  // final salaryBox = Hive.box('DailySalary');
+  // for (int i = 0; i < salaryBox.length; i++) {
+  //   auxSalary = salaryBox.getAt(i);
+  //   print(auxSalary.timeStarted);
+  //   auxList.add(auxSalary);
+  // }
+  // return auxList;
+  // }
 
   Future<bool> _onBackPressed() {
     // return Navigator.pop(context, currentSalary) ?? false;
@@ -212,7 +240,8 @@ class _MonthState extends State<Month> {
     //     false;
   }
 
-  void _moveToSignInScreen(BuildContext context) =>
-      Navigator.pushReplacementNamed(context, '/home',
-          arguments: currentSalary);
+  // void _moveToSignInScreen(BuildContext context) =>
+  //     Navigator.pushReplacementNamed(context, '/home',
+  //         arguments: currentSalary);
+
 }

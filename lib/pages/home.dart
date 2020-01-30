@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:mi_sueldo/services/Salary.dart';
 import 'package:mi_sueldo/services/myTymer.dart';
 import 'dart:async';
@@ -86,6 +87,7 @@ class _HomeState extends State<Home> {
                                         title: salaryTitle,
                                         description: salaryDecription);
                                     salaries.add(salary);
+                                    addSalaryToTheDataBase(salary);
                                   });
                                   salaryTitle = '';
                                   salaryDecription = '';
@@ -131,6 +133,7 @@ class _HomeState extends State<Home> {
                               .pushNamed('/month', arguments: salaries[index]);
                           salaries[index] =
                               result; //con esta linea se recibe lo de la page month
+                          updateDataBase(index, salaries[index]);
                         },
                         subtitle: Text(salaries[index].description),
                         onLongPress: () {
@@ -164,6 +167,8 @@ class _HomeState extends State<Home> {
                                                         .save();
                                                     setState(() {
                                                       salaries.removeAt(index);
+                                                      deleteSalaryFromDataBase(
+                                                          index);
                                                     });
                                                     Navigator.pop(context, []);
                                                   }
@@ -205,6 +210,34 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     // TODO: implement initState
+
+    salaries = readListToTheDataBase();
     super.initState();
+  }
+
+  void addSalaryToTheDataBase(Salary income) {
+    final salaryBox = Hive.box('Salary');
+    salaryBox.add(income);
+  }
+
+  void updateDataBase(index, Salary income) {
+    final salaryBox = Hive.box('Salary');
+    salaryBox.putAt(index, income);
+  }
+
+  void deleteSalaryFromDataBase(index) {
+    final salaryBox = Hive.box('Salary');
+    salaryBox.deleteAt(index);
+  }
+
+  List<Salary> readListToTheDataBase() {
+    List<Salary> auxList = [];
+    Salary auxSalary;
+    final salaryBox = Hive.box('Salary');
+    for (int i = 0; i < salaryBox.length; i++) {
+      auxSalary = salaryBox.getAt(i);
+      auxList.add(auxSalary);
+    }
+    return auxList;
   }
 }

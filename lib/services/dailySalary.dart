@@ -3,29 +3,41 @@ import 'package:mi_sueldo/services/myTymer.dart';
 
 import 'dart:async';
 
+import 'package:hive/hive.dart';
+
+part 'dailySalary.g.dart';
+
+@HiveType(typeId: 1)
 class DailySalary extends Salary {
-  MyTimer timer;
+  @HiveField(7)
   String timeStarted; //!
+  @HiveField(8)
   String timeEnded = 'En curso...'; //!
+  @HiveField(9)
   String currentDate; //!
+  @HiveField(10)
   int salaryPerHour; //!
+  @HiveField(11)
   double currentSalary = 0; //!
+  @HiveField(12)
   int secondsWorked = 0; //!
-  Timer internalTimer;
+  Timer _internalTimer;
+  MyTimer _timer;
 
-  DailySalary(salaryPerHour) {
-    timer = MyTimer();
-    internalTimer = Timer.periodic(Duration(seconds: 1), (t) {
-      secondsWorked += 1;
-    });
-    this.salaryPerHour = salaryPerHour;
-    this.currentDate = timer.getDate();
-    this.timeStarted = timer.getTime();
+  DailySalary(this.salaryPerHour) {
+    _timer = MyTimer();
+    if (secondsWorked == 0) {
+      _internalTimer = Timer.periodic(Duration(seconds: 1), (t) {
+        secondsWorked += 1;
+      });
+      // this.salaryPerHour = salaryPerHour;
+      this.currentDate = _timer.getDate();
+      this.timeStarted = _timer.getTime();
+    }
   }
-
   void finishDayWork() {
-    internalTimer.cancel();
-    timeEnded = timer.getTime();
+    _internalTimer.cancel();
+    timeEnded = _timer.getTime();
   }
 
   void updateSalary() {

@@ -2,9 +2,18 @@ import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
+import 'package:hive/hive.dart';
+
+part 'myTymer.g.dart';
+
+@HiveType(typeId: 2)
 class MyTimer {
-  MyTimer();
-  String timeUpdated = DateTime.now().toString();
+  @HiveField(0)
+  String timeUpdated;
+
+  MyTimer() {
+    this.timeUpdated = DateTime.now().toString();
+  }
 
   // void updateTime() {
   //   Timer.periodic(Duration(seconds: interval), (timer) {
