@@ -13,6 +13,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final _formKey = GlobalKey<FormState>(); //para el popup
 
+  final String version = '1.0.0';
+
   String salaryTitle = 'a';
   String salaryDecription = 'b';
 
@@ -36,82 +38,20 @@ class _HomeState extends State<Home> {
             style: TextStyle(fontSize: 40),
           ),
           onPressed: () {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    content: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              onChanged: (text) {
-                                salaryTitle = text;
-                              },
-                              keyboardType: TextInputType.text,
-                              textAlign: TextAlign.center,
-                              decoration: InputDecoration(
-                                labelText: 'Título',
-                                labelStyle: TextStyle(color: Colors.redAccent),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              onChanged: (text) {
-                                salaryDecription = text;
-                              },
-                              keyboardType: TextInputType.text,
-                              // autofocus: true,
-                              textAlign: TextAlign.center,
-                              decoration: InputDecoration(
-                                labelText: 'Descripción',
-                                labelStyle: TextStyle(color: Colors.redAccent),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: RaisedButton(
-                              child: Text("Crear"),
-                              onPressed: () {
-                                if (_formKey.currentState.validate()) {
-                                  _formKey.currentState.save();
-                                  print('$salaryTitle - $salaryDecription');
-                                  setState(() {
-                                    salary = Salary(
-                                        title: salaryTitle,
-                                        description: salaryDecription);
-                                    salaries.add(salary);
-                                    addSalaryToTheDataBase(salary);
-                                  });
-                                  salaryTitle = '';
-                                  salaryDecription = '';
-                                  Navigator.pop(context, []);
-                                }
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                });
+            //!!!!!!!!!!!!!!!!!!!!!
+            _createNewSalary();
           },
         ),
         appBar: AppBar(backgroundColor: Colors.redAccent, actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.info_outline),
             tooltip: 'configuración',
             onPressed: () {
               setState(() {
                 //TODO: implementar
+                aboutInformation();
               });
-              Navigator.pushNamed(context, '/config');
+              // Navigator.pushNamed(context, '/config');
             },
           ),
         ]),
@@ -205,6 +145,99 @@ class _HomeState extends State<Home> {
                   );
                 },
               ));
+  }
+
+  Widget _createNewSalary() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      onChanged: (text) {
+                        salaryTitle = text;
+                      },
+                      keyboardType: TextInputType.text,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        labelText: 'Título',
+                        labelStyle: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      onChanged: (text) {
+                        salaryDecription = text;
+                      },
+                      keyboardType: TextInputType.text,
+                      // autofocus: true,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        labelText: 'Descripción',
+                        labelStyle: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      child: Text("Crear"),
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          _formKey.currentState.save();
+                          print('$salaryTitle - $salaryDecription');
+                          setState(() {
+                            salary = Salary(
+                                title: salaryTitle,
+                                description: salaryDecription);
+                            salaries.add(salary);
+                            addSalaryToTheDataBase(salary);
+                          });
+                          salaryTitle = '';
+                          salaryDecription = '';
+                          Navigator.pop(context, []);
+                        }
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget aboutInformation() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: AboutListTile(
+            icon: Icon(Icons.info),
+            child: Text("Información"),
+            aboutBoxChildren: <Widget>[
+              Text("Aplicación desarrollada por Gonzalez Exequiel"),
+              Text('Contacto: gonzalez-exequiel@hotmail.com'),
+            ],
+            applicationIcon: Image.asset(
+              'assets/logo.png',
+              width: 150,
+            ),
+            applicationLegalese: '© 2020 All rights reserved',
+            applicationName: "Mi sueldo",
+            applicationVersion: "$version",
+          ),
+        );
+      },
+    );
   }
 
   @override

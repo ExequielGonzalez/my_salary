@@ -40,6 +40,7 @@ class _MonthState extends State<Month> {
   Widget build(BuildContext context) {
     currentSalary = ModalRoute.of(context).settings.arguments;
     salaryPerHour = currentSalary.last().salaryPerHour;
+
     return WillPopScope(
       onWillPop: () {}, //el boton back no hace nada
       child: Scaffold(
@@ -57,10 +58,23 @@ class _MonthState extends State<Month> {
           body: Column(
             children: <Widget>[
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   // Text('\$${currentSalary.getTotalSalary().toString()}'),
-                  Text('\$${currentSalary.getTotalSalary().toString()}'),
+                  Container(
+                    constraints: BoxConstraints(minWidth: 170, maxWidth: 300),
+                    child: Text(
+                      '\$${currentSalary.getTotalSalary().toString()}',
+                      style: TextStyle(
+                        letterSpacing: 2,
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
                   RaisedButton(
                     onPressed: () {
                       if (!isStarted) {
@@ -98,8 +112,8 @@ class _MonthState extends State<Month> {
                       decoration: InputDecoration(
                         icon: Icon(Icons.monetization_on),
                         hintText: '${currentSalary.fixedAmount}',
-                        labelText: 'Salario monto fijo',
-                        labelStyle: TextStyle(color: Colors.redAccent),
+                        helperText: 'Salario monto fijo',
+                        helperStyle: TextStyle(color: Colors.redAccent),
                         border: OutlineInputBorder(),
                       ),
                       onChanged: (text) {
@@ -117,8 +131,8 @@ class _MonthState extends State<Month> {
                       decoration: InputDecoration(
                           icon: Icon(Icons.monetization_on),
                           hintText: '${currentSalary.last().salaryPerHour}',
-                          labelText: 'Salario por hora',
-                          labelStyle: TextStyle(color: Colors.redAccent),
+                          helperText: 'Salario por hora',
+                          helperStyle: TextStyle(color: Colors.redAccent),
                           border: OutlineInputBorder()),
                       onChanged: (text) {
                         salaryPerHour = int.parse(text);
