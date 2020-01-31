@@ -21,8 +21,12 @@ class DailySalary extends Salary {
   double currentSalary = 0; //!
   @HiveField(12)
   int secondsWorked = 0; //!
+  @HiveField(13)
   Timer _internalTimer;
+  @HiveField(14)
   MyTimer _timer;
+  @HiveField(15)
+  bool isFinished = false;
 
   DailySalary(this.salaryPerHour) {
     _timer = MyTimer();
@@ -36,8 +40,11 @@ class DailySalary extends Salary {
     }
   }
   void finishDayWork() {
-    _internalTimer.cancel();
-    timeEnded = _timer.getTime();
+    if (!isFinished) {
+      _internalTimer.cancel();
+      timeEnded = _timer.getTime();
+    }
+    isFinished = true;
   }
 
   void updateSalary() {
@@ -46,6 +53,10 @@ class DailySalary extends Salary {
     currentSalary = (currentSalary * 100).round().toDouble() /
         100; //redondear a la segunda cifra.
     //En este caso se redondea a dos cifras porque se agrego un 100, si se quieren 3 cifras hay que usar 1000 en su lugar
+  }
+
+  int secondsTotalWorked() {
+    return secondsBetweenTwoTimes(this.timeStarted, this.timeEnded);
   }
 }
 

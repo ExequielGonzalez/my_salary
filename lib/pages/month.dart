@@ -14,7 +14,7 @@ class _MonthState extends State<Month> {
   Salary currentSalary;
 
   // List<DailySalary> incomes = [];
-  int salaryPerHour = 1;
+  int salaryPerHour = 0;
   String currentDate;
   String timeStarted;
 
@@ -64,7 +64,7 @@ class _MonthState extends State<Month> {
                   Container(
                     constraints: BoxConstraints(minWidth: 170, maxWidth: 300),
                     child: Text(
-                      '\$${currentSalary.getTotalSalary().toString()}',
+                      'Total: \$${currentSalary.getTotalSalary().toString()}',
                       style: TextStyle(
                         letterSpacing: 2,
                         color: Colors.black,
@@ -100,46 +100,47 @@ class _MonthState extends State<Month> {
                   ),
                 ],
               ),
-              Row(
-                //!salario monto fijo
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Container(
-                    width: 200,
-                    child: TextField(
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.monetization_on),
-                        hintText: '${currentSalary.fixedAmount}',
-                        helperText: 'Salario monto fijo',
-                        helperStyle: TextStyle(color: Colors.redAccent),
-                        border: OutlineInputBorder(),
-                      ),
-                      onChanged: (text) {
-                        currentSalary.fixedAmount = int.parse(text);
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: 200,
-                    child: TextField(
-                      //!Salario por hora
-                      keyboardType: TextInputType.number,
-                      // autofocus: true,
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 3, 8, 3),
+                child: Row(
+                  //!salario monto fijo
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
                           icon: Icon(Icons.monetization_on),
-                          hintText: '${currentSalary.last().salaryPerHour}',
-                          helperText: 'Salario por hora',
+                          hintText: '${currentSalary.fixedAmount}',
+                          helperText: 'Salario monto fijo (Opcional)',
                           helperStyle: TextStyle(color: Colors.redAccent),
-                          border: OutlineInputBorder()),
-                      onChanged: (text) {
-                        salaryPerHour = int.parse(text);
-                      },
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (text) {
+                          currentSalary.fixedAmount = int.parse(text);
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: TextField(
+                        //!Salario por hora
+                        keyboardType: TextInputType.number,
+                        // autofocus: true,
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                            icon: Icon(Icons.monetization_on),
+                            hintText: '${currentSalary.last().salaryPerHour}',
+                            helperText: 'Salario por hora',
+                            helperStyle: TextStyle(color: Colors.redAccent),
+                            border: OutlineInputBorder()),
+                        onChanged: (text) {
+                          salaryPerHour = int.parse(text);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
               Divider(
                 height: 50,

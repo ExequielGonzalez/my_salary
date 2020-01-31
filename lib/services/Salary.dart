@@ -46,6 +46,14 @@ class Salary {
     return totalSalary;
   }
 
+  String getTotalTimeWorked() {
+    int aux = 0;
+    for (int i = 0; i < incomes.length; i++) {
+      aux += incomes[i].secondsTotalWorked();
+    }
+    return _secondsToHour(aux);
+  }
+
   DailySalary last() {
     if (incomes.isNotEmpty)
       return incomes.last;
@@ -70,5 +78,48 @@ class Salary {
 
   void remove(index) {
     if (incomes.isNotEmpty) incomes.removeAt(index);
+  }
+
+  String _hourBetweenTwoTimes(String time1, String time2) {
+    int aux;
+    aux = secondsBetweenTwoTimes(time1, time2);
+    return _secondsToHour(aux);
+  }
+
+  int secondsBetweenTwoTimes(String time1, String time2) {
+    int sec1 = _hourToSeconds(time1);
+    int sec2 = _hourToSeconds(time2);
+    if (sec1 <= sec2) {
+      return sec2 - sec1;
+    } else {
+      return (sec2 + 86400) - sec1;
+    }
+  }
+
+  int _hourToSeconds(String hour) {
+    List<String> aux = hour.split(':');
+    return int.parse(aux[0]) * 3600 +
+        int.parse(aux[1]) * 60 +
+        int.parse(aux[2]);
+  }
+
+  String _secondsToHour(int sec) {
+    double h;
+    double m;
+    double s;
+    int ha;
+    int ma;
+    int sa;
+    h = (sec / 3600);
+    m = (h - h.floor()) * 60;
+    s = (m - m.floor()) * 60;
+    s = s.round().toDouble();
+    m = m.floor().toDouble();
+    h = h.floor().toDouble();
+    ha = h.toInt();
+    ma = m.toInt();
+    sa = s.toInt();
+    print('$ha:$ma:$sa');
+    return ('$ha:$ma:$sa');
   }
 }

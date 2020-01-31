@@ -24,6 +24,9 @@ class DailySalaryAdapter extends TypeAdapter<DailySalary> {
       ..currentDate = fields[9] as String
       ..currentSalary = fields[11] as double
       ..secondsWorked = fields[12] as int
+      .._internalTimer = fields[13] as Timer
+      .._timer = fields[14] as MyTimer
+      ..isFinished = fields[15] as bool
       ..fixedAmount = fields[0] as int
       ..firstDate = fields[1] as String
       ..lastDate = fields[2] as String
@@ -36,7 +39,7 @@ class DailySalaryAdapter extends TypeAdapter<DailySalary> {
   @override
   void write(BinaryWriter writer, DailySalary obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(16)
       ..writeByte(7)
       ..write(obj.timeStarted)
       ..writeByte(8)
@@ -49,6 +52,12 @@ class DailySalaryAdapter extends TypeAdapter<DailySalary> {
       ..write(obj.currentSalary)
       ..writeByte(12)
       ..write(obj.secondsWorked)
+      ..writeByte(13)
+      ..write(obj._internalTimer)
+      ..writeByte(14)
+      ..write(obj._timer)
+      ..writeByte(15)
+      ..write(obj.isFinished)
       ..writeByte(0)
       ..write(obj.fixedAmount)
       ..writeByte(1)

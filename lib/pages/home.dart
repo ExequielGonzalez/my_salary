@@ -15,8 +15,8 @@ class _HomeState extends State<Home> {
 
   final String version = '1.0.0';
 
-  String salaryTitle = 'a';
-  String salaryDecription = 'b';
+  String salaryTitle = '';
+  String salaryDecription = '';
 
   List<Salary> salaries = [];
 
@@ -42,109 +42,75 @@ class _HomeState extends State<Home> {
             _createNewSalary();
           },
         ),
-        appBar: AppBar(backgroundColor: Colors.redAccent, actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.info_outline),
-            tooltip: 'configuración',
-            onPressed: () {
-              setState(() {
-                //TODO: implementar
-                aboutInformation();
-              });
-              // Navigator.pushNamed(context, '/config');
-            },
-          ),
-        ]),
+        appBar: AppBar(
+          backgroundColor: Colors.redAccent,
+          title: Text('Mi Sueldo'),
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.info_outline),
+              tooltip: 'configuración',
+              onPressed: () {
+                setState(() {
+                  aboutInformation();
+                });
+                // Navigator.pushNamed(context, '/config');
+              },
+            ),
+          ],
+        ),
         body: salaries?.isEmpty ?? true
             ? Center(child: Text(''))
-            : ListView.builder(
-                scrollDirection: Axis.vertical,
-                // shrinkWrap: true,
-                itemCount: salaries.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
-                    child: Card(
-                      child: ListTile(
-                        title: Text(salaries[index].title),
-                        onTap: () async {
-                          //TODO: ver como ir a la pagina month
-                          dynamic result = await Navigator.of(context)
-                              .pushNamed('/month', arguments: salaries[index]);
-                          salaries[index] =
-                              result; //con esta linea se recibe lo de la page month
-                          updateDataBase(index, salaries[index]);
-                        },
-                        subtitle: Text(salaries[index].description),
-                        onLongPress: () {
-                          //!**********Borrar Ingresos*****************!
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: Form(
-                                    key: _formKey,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                              '¿Desea eliminar este ingreso?'),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: <Widget>[
-                                              RaisedButton(
-                                                child: Text('Eliminar'),
-                                                onPressed: () {
-                                                  if (_formKey.currentState
-                                                      .validate()) {
-                                                    _formKey.currentState
-                                                        .save();
-                                                    setState(() {
-                                                      salaries.removeAt(index);
-                                                      deleteSalaryFromDataBase(
-                                                          index);
-                                                    });
-                                                    Navigator.pop(context, []);
-                                                  }
-                                                },
-                                              ),
-                                              RaisedButton(
-                                                child: Text(
-                                                  'Cancelar',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                onPressed: () {
-                                                  if (_formKey.currentState
-                                                      .validate()) {
-                                                    _formKey.currentState
-                                                        .save();
+            : _createSalaryList());
+  }
 
-                                                    Navigator.pop(context, []);
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              });
-                        }, //!************Borrar Ingresos***************!
-                      ),
-                    ),
-                  );
-                },
-              ));
+  Widget _createSalaryList() {
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      // shrinkWrap: true,
+      itemCount: salaries.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
+          child: Card(
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child: ListTile(
+                    title: Text(salaries[index].title),
+                    onTap: () async {
+                      //TODO: ver como ir a la pagina month
+                      dynamic result = await Navigator.of(context)
+                          .pushNamed('/month', arguments: salaries[index]);
+                      salaries[index] =
+                          result; //con esta linea se recibe lo de la page month
+                      updateDataBase(index, salaries[index]);
+                    },
+                    subtitle: Text(salaries[index].description),
+                    onLongPress: () {
+                      _deleteSalary(index);
+                    }, //!************Borrar Ingresos***************!
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: <Widget>[
+                      // Text(''),
+                      Text(
+                          'Horas totales: ${salaries[index].getTotalTimeWorked()}'),
+                      Text(
+                          'Salario Total: \$${salaries[index].getTotalSalary().toString()}')
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _createNewSalary() {
@@ -206,6 +172,61 @@ class _HomeState extends State<Home> {
                           Navigator.pop(context, []);
                         }
                       },
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget _deleteSalary(index) {
+    //!**********Borrar Ingresos*****************!
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('¿Desea eliminar este ingreso?'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        RaisedButton(
+                          child: Text('Eliminar'),
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              _formKey.currentState.save();
+                              setState(() {
+                                salaries.removeAt(index);
+                                deleteSalaryFromDataBase(index);
+                              });
+                              Navigator.pop(context, []);
+                            }
+                          },
+                        ),
+                        RaisedButton(
+                          child: Text(
+                            'Cancelar',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              _formKey.currentState.save();
+                              Navigator.pop(context, []);
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   )
                 ],
