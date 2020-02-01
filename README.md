@@ -23,3 +23,5 @@ V 1.0.0
 V 1.0.1
 -Se corrigió un error que actualizaba el horario de finalización del ultimo trabajo registrado cada vez que se abria la app.
 -Se muestra en la página principal la cantidad de horas y trabajadas y el salario acumulado.
+-Los textos ahora se adaptan mejor a distintas pantallas
+

@@ -1,8 +1,5 @@
 /** 
-//TODO:Los textForm del a pagina month no tienen que tener tamaño en pixeles
 //TODO:El Dialog de About no tiene que tener pixeles
-//TODO: Mostrar las horas totales de cada mes
-//TODO: En home mostrar un resumen de las horas totales y el sueldo totalaaaaaaaaa
 //TODO: Agregar pantalla emergente con ayuda para la aplicacion
 //TODO: que cuando se cierre la aplicacion siga contando
 //TODO: Cuando creas un nuevo Salary, te mande directamente a la pagina month

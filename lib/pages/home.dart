@@ -13,7 +13,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final _formKey = GlobalKey<FormState>(); //para el popup
 
-  final String version = '1.0.0';
+  final String version = '1.0.1';
 
   String salaryTitle = '';
   String salaryDecription = '';
