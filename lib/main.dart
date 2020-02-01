@@ -2,6 +2,7 @@
 //TODO:El Dialog de About no tiene que tener pixeles
 //TODO: Agregar pantalla emergente con ayuda para la aplicacion
 //TODO: que cuando se cierre la aplicacion siga contando
+//TODO:usar los metodos de hourToSeconds para calcular el tiempo transcurrido aunque la app este cerrada
 //TODO: Cuando creas un nuevo Salary, te mande directamente a la pagina month
 //TODO:poder actualziar la DB en month
 //TODO: Dark mode

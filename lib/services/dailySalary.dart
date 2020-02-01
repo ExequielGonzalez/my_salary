@@ -21,9 +21,7 @@ class DailySalary extends Salary {
   double currentSalary = 0; //!
   @HiveField(12)
   int secondsWorked = 0; //!
-  @HiveField(13)
   Timer _internalTimer;
-  @HiveField(14)
   MyTimer _timer;
   @HiveField(15)
   bool isFinished = false;

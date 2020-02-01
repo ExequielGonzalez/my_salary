@@ -44,6 +44,7 @@ class _MonthState extends State<Month> {
     return WillPopScope(
       onWillPop: () {}, //el boton back no hace nada
       child: Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: Colors.amber[100],
           appBar: AppBar(
               title: Text('${currentSalary.title}'),

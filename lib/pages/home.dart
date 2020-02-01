@@ -242,6 +242,7 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         return Dialog(
           child: AboutListTile(
+            dense: true,
             icon: Icon(Icons.info),
             child: Text("Información"),
             aboutBoxChildren: <Widget>[
@@ -250,7 +251,8 @@ class _HomeState extends State<Home> {
             ],
             applicationIcon: Image.asset(
               'assets/logo.png',
-              width: 150,
+              fit: BoxFit.contain,
+              width: 100,
             ),
             applicationLegalese: '© 2020 All rights reserved',
             applicationName: "Mi sueldo",
