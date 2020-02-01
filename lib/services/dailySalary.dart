@@ -56,6 +56,11 @@ class DailySalary extends Salary {
   int secondsTotalWorked() {
     return secondsBetweenTwoTimes(this.timeStarted, this.timeEnded);
   }
+
+  void setSecondsWorked() {
+    this.secondsWorked =
+        secondsBetweenTwoTimes(this.timeStarted, _timer.getTime());
+  }
 }
 
 // void updateTime() {

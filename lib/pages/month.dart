@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:mi_sueldo/services/dailySalary.dart';
 import 'package:mi_sueldo/services/Salary.dart';
+
+import 'package:mi_sueldo/utils/SharedPreferences.dart';
 
 class Month extends StatefulWidget {
   @override
@@ -24,6 +25,9 @@ class _MonthState extends State<Month> {
   int secondCounter = 0;
 
   DailySalary income; //aux variable
+
+  bool wasStarted =
+      false; //variable usada para saber si la app se cerró mientras contaba
 
   void updateEverything() {
     timer = Timer.periodic(Duration(seconds: 1), (t) {
@@ -83,6 +87,7 @@ class _MonthState extends State<Month> {
                           income = DailySalary(salaryPerHour);
                           currentSalary.addIncome(income);
                         });
+
                         // addDailySalaryToTheDataBase(income);//!..............
                       } else {
                         currentSalary.last().finishDayWork();
@@ -198,8 +203,11 @@ class _MonthState extends State<Month> {
   @override
   void initState() {
     updateEverything();
-    // incomes = readListToTheDataBase();
-    // TODO: implement initState
+    wasStarted = checkIfWasStarted();
+    if (wasStarted) {
+      isStarted = true;
+      currentSalary.last().setSecondsWorked();
+    }
     super.initState();
   }
 
@@ -211,53 +219,13 @@ class _MonthState extends State<Month> {
     // TODO: implement dispose
     // final salaryBox = Hive.box('DailySalary');
     // salaryBox.clear();
-
+    if (isStarted) {
+      addBoolToSharedPreference('wasStarted', true);
+    }
     super.dispose();
   }
 
-  void addDailySalaryToTheDataBase(DailySalary income) {
-    // final salaryBox = Hive.box('DailySalary');
-    // salaryBox.add(income);
-    // salaryBox.
+  bool checkIfWasStarted() {
+    return getBoolValuesSharedPreference('wasStarted');
   }
-
-  // List<DailySalary> readListToTheDataBase() {
-  // List<DailySalary> auxList = [];
-  // DailySalary auxSalary;
-  // final salaryBox = Hive.box('DailySalary');
-  // for (int i = 0; i < salaryBox.length; i++) {
-  //   auxSalary = salaryBox.getAt(i);
-  //   print(auxSalary.timeStarted);
-  //   auxList.add(auxSalary);
-  // }
-  // return auxList;
-  // }
-
-  Future<bool> _onBackPressed() {
-    // return Navigator.pop(context, currentSalary) ?? false;
-    // return showDialog(
-    //       context: context,
-    //       builder: (context) => new AlertDialog(
-    //         title: new Text('Are you sure?'),
-    //         content: new Text('Do you want to exit an App'),
-    //         actions: <Widget>[
-    //           new GestureDetector(
-    //             onTap: () => Navigator.of(context).pop(false),
-    //             child: Text("NO"),
-    //           ),
-    //           SizedBox(height: 16),
-    //           new GestureDetector(
-    //             onTap: () => Navigator.of(context).pop(true),
-    //             child: Text("YES"),
-    //           ),
-    //         ],
-    //       ),
-    //     ) ??
-    //     false;
-  }
-
-  // void _moveToSignInScreen(BuildContext context) =>
-  //     Navigator.pushReplacementNamed(context, '/home',
-  //         arguments: currentSalary);
-
 }
