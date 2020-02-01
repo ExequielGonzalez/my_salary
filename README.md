@@ -25,3 +25,5 @@ V 1.0.1
 -Se muestra en la página principal la cantidad de horas y trabajadas y el salario acumulado.
 -Los textos ahora se adaptan mejor a distintas pantallas
 
+V 1.0.2
+-Corregido error visual en la ventana About
