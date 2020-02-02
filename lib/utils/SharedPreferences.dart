@@ -2,22 +2,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 addStringToSharedPreference(String key, String value) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setString(key, value);
+  await prefs.setString(key, value);
 }
 
 addIntToSharedPreference(String key, int value) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setInt(key, value);
+  await prefs.setInt(key, value);
 }
 
 addDoubleToSharedPreference(String key, double value) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setDouble(key, value);
+  await prefs.setDouble(key, value);
 }
 
 addBoolToSharedPreference(String key, bool value) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setBool(key, value);
+  await prefs.setBool(key, value);
 }
 
 getStringValuesSharedPreference(String key) async {
@@ -30,7 +30,7 @@ getStringValuesSharedPreference(String key) async {
 getBoolValuesSharedPreference(String key) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   //Return bool
-  bool boolValue = prefs.getBool(key);
+  bool boolValue = prefs.getBool(key) ?? false;
   return boolValue;
 }
 

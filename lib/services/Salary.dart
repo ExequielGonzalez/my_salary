@@ -97,10 +97,20 @@ class Salary {
   }
 
   int _hourToSeconds(String hour) {
-    List<String> aux = hour.split(':');
-    return int.parse(aux[0]) * 3600 +
-        int.parse(aux[1]) * 60 +
-        int.parse(aux[2]);
+    // if(hour!='En curso...'){
+    //   List<String> aux = hour.split(':');
+    //   return int.parse(aux[0]) * 3600 +
+    //       int.parse(aux[1]) * 60 +
+    //       int.parse(aux[2]);
+    // }
+    try {
+      List<String> aux = hour.split(':');
+      return int.parse(aux[0]) * 3600 +
+          int.parse(aux[1]) * 60 +
+          int.parse(aux[2]);
+    } catch (e) {
+      return 0;
+    }
   }
 
   String _secondsToHour(int sec) {
@@ -119,7 +129,7 @@ class Salary {
     ha = h.toInt();
     ma = m.toInt();
     sa = s.toInt();
-    print('$ha:$ma:$sa');
+    // print('$ha:$ma:$sa');
     return ('$ha:$ma:$sa');
   }
 }

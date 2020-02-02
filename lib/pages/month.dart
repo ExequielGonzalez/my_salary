@@ -26,8 +26,8 @@ class _MonthState extends State<Month> {
 
   DailySalary income; //aux variable
 
-  bool wasStarted =
-      false; //variable usada para saber si la app se cerró mientras contaba
+  var wasStarted;
+  //variable usada para saber si la app se cerró mientras contaba
 
   void updateEverything() {
     timer = Timer.periodic(Duration(seconds: 1), (t) {
@@ -42,6 +42,7 @@ class _MonthState extends State<Month> {
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     currentSalary = ModalRoute.of(context).settings.arguments;
     salaryPerHour = currentSalary.last().salaryPerHour;
 
@@ -57,6 +58,11 @@ class _MonthState extends State<Month> {
               leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: () {
+                  if (isStarted == true)
+                    addBoolToSharedPreference('wasStarted', true);
+                  else {
+                    addBoolToSharedPreference('wasStarted', false);
+                  }
                   Navigator.pop(context, currentSalary);
                 },
               )),
@@ -81,14 +87,13 @@ class _MonthState extends State<Month> {
                     width: 10,
                   ),
                   RaisedButton(
+                    //Empezar
                     onPressed: () {
                       if (!isStarted) {
                         setState(() {
                           income = DailySalary(salaryPerHour);
                           currentSalary.addIncome(income);
                         });
-
-                        // addDailySalaryToTheDataBase(income);//!..............
                       } else {
                         currentSalary.last().finishDayWork();
                         // setState(() {
@@ -202,20 +207,32 @@ class _MonthState extends State<Month> {
 
   @override
   void initState() {
-    updateEverything();
+    print('InitState');
     wasStarted = checkIfWasStarted();
-    if (wasStarted) {
-      isStarted = true;
-      currentSalary.last().setSecondsWorked();
-    }
+    // if (wasStarteds) {
+    //   print('$wasStarteds');
+    //   isStarted = true;
+    //   currentSalary.last().setSecondsWorked();
+    // }
+    wasStarted.then((onValue) {
+      print('$onValue');
+      if (onValue) {
+        isStarted = true;
+        currentSalary.last().setSecondsWorked();
+        startStop = isStarted ? 'finalizar' : 'empezar';
+      }
+    });
+    updateEverything();
+
     super.initState();
   }
 
   @override
   void dispose() {
+    print('dispose');
     timer.cancel();
     // Navigator.pop(context, currentSalary);
-    currentSalary.last().finishDayWork();
+    // currentSalary.last().finishDayWork();
     // TODO: implement dispose
     // final salaryBox = Hive.box('DailySalary');
     // salaryBox.clear();
@@ -225,7 +242,5 @@ class _MonthState extends State<Month> {
     super.dispose();
   }
 
-  bool checkIfWasStarted() {
-    return getBoolValuesSharedPreference('wasStarted');
-  }
+  checkIfWasStarted() => getBoolValuesSharedPreference('wasStarted');
 }

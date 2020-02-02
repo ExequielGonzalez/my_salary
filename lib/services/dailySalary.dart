@@ -54,7 +54,10 @@ class DailySalary extends Salary {
   }
 
   int secondsTotalWorked() {
-    return secondsBetweenTwoTimes(this.timeStarted, this.timeEnded);
+    if (this.timeEnded == 'En curso...')
+      return secondsBetweenTwoTimes(this.timeStarted, _timer.getTime());
+    else
+      return secondsBetweenTwoTimes(this.timeStarted, this.timeEnded);
   }
 
   void setSecondsWorked() {
