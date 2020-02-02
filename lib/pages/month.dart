@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mi_sueldo/services/dailySalary.dart';
 import 'package:mi_sueldo/services/Salary.dart';
-
 import 'package:mi_sueldo/utils/SharedPreferences.dart';
+import 'package:mi_sueldo/utils/DataBaseHandler.dart';
 
 class Month extends StatefulWidget {
   @override
@@ -27,6 +27,7 @@ class _MonthState extends State<Month> {
   DailySalary income; //aux variable
 
   var wasStarted;
+  var index;
   //variable usada para saber si la app se cerró mientras contaba
 
   void updateEverything() {
@@ -94,6 +95,7 @@ class _MonthState extends State<Month> {
                           income = DailySalary(salaryPerHour);
                           currentSalary.addIncome(income);
                         });
+                        updateDataBase(index, currentSalary);
                       } else {
                         currentSalary.last().finishDayWork();
                         // setState(() {
@@ -222,6 +224,11 @@ class _MonthState extends State<Month> {
         startStop = isStarted ? 'finalizar' : 'empezar';
       }
     });
+    index = getIndexSalary();
+    index.then((onValue) {
+      print(onValue);
+      index = onValue;
+    });
     updateEverything();
 
     super.initState();
@@ -243,4 +250,5 @@ class _MonthState extends State<Month> {
   }
 
   checkIfWasStarted() => getBoolValuesSharedPreference('wasStarted');
+  getIndexSalary() => getIntValuesSharedPreference('index');
 }

@@ -27,3 +27,4 @@ V 1.0.1
 
 V 1.0.2
 -Corregido error visual en la ventana About
+-Ahora la aplicación sigue contando aunque sea cerrada

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:mi_sueldo/services/Salary.dart';
-import 'package:mi_sueldo/services/myTymer.dart';
-import 'dart:async';
-import 'package:intl/intl.dart';
+import 'package:mi_sueldo/utils/SharedPreferences.dart';
+import 'package:mi_sueldo/utils/DataBaseHandler.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -81,7 +79,9 @@ class _HomeState extends State<Home> {
                     title: Text(salaries[index].title),
                     onTap: () async {
                       //TODO: ver como ir a la pagina month
-                      dynamic result = await Navigator.of(context)
+                      addIntToSharedPreference('index', index);
+                      dynamic result = await Navigator.of(
+                              context) //se va a month con el salario elegido
                           .pushNamed('/month', arguments: salaries[index]);
                       salaries[index] =
                           result; //con esta linea se recibe lo de la page month
@@ -269,31 +269,5 @@ class _HomeState extends State<Home> {
 
     salaries = readListToTheDataBase();
     super.initState();
-  }
-
-  void addSalaryToTheDataBase(Salary income) {
-    final salaryBox = Hive.box('Salary');
-    salaryBox.add(income);
-  }
-
-  void updateDataBase(index, Salary income) {
-    final salaryBox = Hive.box('Salary');
-    salaryBox.putAt(index, income);
-  }
-
-  void deleteSalaryFromDataBase(index) {
-    final salaryBox = Hive.box('Salary');
-    salaryBox.deleteAt(index);
-  }
-
-  List<Salary> readListToTheDataBase() {
-    List<Salary> auxList = [];
-    Salary auxSalary;
-    final salaryBox = Hive.box('Salary');
-    for (int i = 0; i < salaryBox.length; i++) {
-      auxSalary = salaryBox.getAt(i);
-      auxList.add(auxSalary);
-    }
-    return auxList;
   }
 }
