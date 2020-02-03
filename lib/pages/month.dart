@@ -31,8 +31,10 @@ class _MonthState extends State<Month> {
   //variable usada para saber si la app se cerró mientras contaba
 
   void updateEverything() {
+    print('isStarted : $isStarted');
     timer = Timer.periodic(Duration(seconds: 1), (t) {
       if (isStarted) {
+        print('aca no deberia estar entrando');
         setState(() {
           currentSalary.last().updateSalary();
           currentSalary.getTotalSalary();
@@ -215,21 +217,7 @@ class _MonthState extends State<Month> {
   @override
   void initState() {
     // print('InitState');
-    wasStarted = checkIfWasStarted();
-    wasStarted.then((onValue) {
-      print('$onValue');
-      if (onValue) {
-        isStarted = true;
-        currentSalary.last().setSecondsWorked();
-        startStop = isStarted ? 'finalizar' : 'empezar';
-      }
-    });
-    index = getIndexSalary();
-    index.then((onValue) {
-      print(onValue);
-      index = onValue;
-    });
-    updateEverything();
+    checkIfWasStarted();
 
     super.initState();
   }
@@ -243,12 +231,23 @@ class _MonthState extends State<Month> {
     // TODO: implement dispose
     // final salaryBox = Hive.box('DailySalary');
     // salaryBox.clear();
-    if (isStarted) {
-      addBoolToSharedPreference('wasStarted', true);
-    }
+    // if (isStarted) {
+    //   addBoolToSharedPreference('wasStarted', true);
+    // }
     super.dispose();
   }
 
-  checkIfWasStarted() => getBoolValuesSharedPreference('wasStarted');
+  void checkIfWasStarted() async {
+    wasStarted = await getBoolValuesSharedPreference('wasStarted');
+    print('is working : $wasStarted');
+    if (wasStarted ?? false) {
+      isStarted = true;
+      currentSalary.last().setSecondsWorked();
+      startStop = isStarted ? 'finalizar' : 'empezar';
+    }
+    index = await getIntValuesSharedPreference('index');
+    updateEverything();
+  }
+
   getIndexSalary() => getIntValuesSharedPreference('index');
 }

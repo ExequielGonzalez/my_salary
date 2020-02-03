@@ -12,7 +12,7 @@ class DailySalary extends Salary {
   @HiveField(7)
   String timeStarted; //!
   @HiveField(8)
-  String timeEnded = 'En curso...'; //!
+  String timeEnded = ''; //!
   @HiveField(9)
   String currentDate; //!
   @HiveField(10)
@@ -28,7 +28,8 @@ class DailySalary extends Salary {
 
   DailySalary(this.salaryPerHour) {
     _timer = MyTimer();
-    if (secondsWorked == 0) {
+    this.timeEnded = 'En curso...';
+    if (secondsWorked == 0 && isFinished == false) {
       _internalTimer = Timer.periodic(Duration(seconds: 1), (t) {
         secondsWorked += 1;
       });

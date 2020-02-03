@@ -3,8 +3,6 @@
  * 
 //TODO:El Dialog de About no tiene que tener pixeles
 //TODO: Agregar pantalla emergente con ayuda para la aplicacion
-//TODO: Cuando creas un nuevo Salary, te mande directamente a la pagina month
-//TODO:poder actualizar la DB en month
 //TODO: Dark mode
 //TODO: exportar a CSV la informacion
 */

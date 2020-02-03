@@ -40,7 +40,7 @@ class Salary {
       for (int i = 0; i < incomes.length - 1; i++) {
         totalSalary += incomes[i].currentSalary;
       }
-      incomes.last.updateSalary();
+      if (!incomes.last.isFinished) incomes.last.updateSalary();
       totalSalary += incomes.last.currentSalary;
       totalSalary = totalSalary + fixedAmount;
       totalSalary = (totalSalary * 100).round().toDouble() /

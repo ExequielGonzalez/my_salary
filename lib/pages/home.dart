@@ -25,19 +25,25 @@ class _HomeState extends State<Home> {
   Timer timer;
 
   bool isWorkingNow = false;
-  int activeIndex;
+  int activeIndex = 0;
   Color listColor = Colors.white;
+
+  String currentTimeWorked;
+  String currentSalaryReceived;
 
   void updateEverything() {
     print('se llamo al update everything. is working $isWorkingNow');
-    timer = Timer.periodic(Duration(seconds: 10), (t) {
+    timer = Timer.periodic(Duration(seconds: 2), (t) {
       if (salaries.isNotEmpty) {
-        setState(() {
-          for (int i = 0; i < salaries.length; i++) {
-            salaries[i].getTotalSalary();
-            salaries[i].getTotalTimeWorked();
-          }
-        });
+        if (isWorkingNow) {
+          print('isWorkingNow: $isWorkingNow - activeIndex: $activeIndex');
+          setState(() {
+            currentSalaryReceived =
+                salaries[activeIndex].getTotalSalary().toString();
+            currentTimeWorked =
+                salaries[activeIndex].getTotalTimeWorked().toString();
+          });
+        }
       }
     });
   }
@@ -87,7 +93,7 @@ class _HomeState extends State<Home> {
       itemBuilder: (context, index) {
         // focusColor(index);
         return Padding(
-          padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
+          padding: const EdgeInsets.fromLTRB(4, 3, 4, 0),
           child: Card(
             child: Container(
               color: (index == activeIndex && isWorkingNow == true)
@@ -114,6 +120,13 @@ class _HomeState extends State<Home> {
                               result; //con esta linea se recibe lo de la page month
                           updateDataBase(index, salaries[index]);
                           _checkIfIsWorking();
+                          setState(() {
+                            currentSalaryReceived = salaries[activeIndex]
+                                .getTotalSalary()
+                                .toString();
+                            currentTimeWorked =
+                                salaries[activeIndex].getTotalTimeWorked();
+                          });
                           // else
                           //   timer.cancel();
                         }
@@ -130,9 +143,9 @@ class _HomeState extends State<Home> {
                       children: <Widget>[
                         // Text(''),
                         Text(
-                            'Horas totales: ${salaries[index].getTotalTimeWorked()}'),
+                            'Horas totales: ${(index == activeIndex) ? currentTimeWorked : salaries[index].getTotalTimeWorked()}'),
                         Text(
-                            'Salario Total: \$${salaries[index].getTotalSalary().toString()}')
+                            'Salario Total: \$${(index == activeIndex) ? currentSalaryReceived : salaries[index].totalSalary.toString()}')
                       ],
                     ),
                   )
@@ -371,7 +384,8 @@ class _HomeState extends State<Home> {
     salaries = readListToTheDataBase();
     _checkIfIsWorking();
     print('is working desde el init: $isWorkingNow');
-
+    currentSalaryReceived = salaries[activeIndex].getTotalSalary().toString();
+    currentTimeWorked = salaries[activeIndex].getTotalTimeWorked();
     super.initState();
   }
 

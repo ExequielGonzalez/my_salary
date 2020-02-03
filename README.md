@@ -35,4 +35,5 @@ V 1.1.0
 -Ahora se colorea el "salario" que esta activo actualmente(desde la pagina principal)
 -Si hay un contador activo, solo se puede acceder al salario que lo contiene, es decir el que se encuentra coloreado.
 
-//Borrar: cuando eliminas uno que esta contando, activeIndex se bugea y rompe todo.
+//Borrar: Cuando algún salario esta activo (sin contar el primero), el primero aun aumenta su sueldo, pero no su horario. No deberia alterarse
+//Borrar: creo que el problema esta en Month, por como se lee el SharedPreference. Copiar lo de home.
