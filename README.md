@@ -28,3 +28,11 @@ V 1.0.1
 V 1.0.2
 -Corregido error visual en la ventana About
 -Ahora la aplicación sigue contando aunque sea cerrada
+-Ya no es necesario volver a la pagina principal para guardar los cambios
+
+V 1.1.0
+-Ahora la página principal se actualiza sola cada 10 segundos.
+-Ahora se colorea el "salario" que esta activo actualmente(desde la pagina principal)
+-Si hay un contador activo, solo se puede acceder al salario que lo contiene, es decir el que se encuentra coloreado.
+
+//Borrar: cuando eliminas uno que esta contando, activeIndex se bugea y rompe todo.

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mi_sueldo/services/Salary.dart';
 import 'package:mi_sueldo/utils/SharedPreferences.dart';
@@ -11,7 +13,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final _formKey = GlobalKey<FormState>(); //para el popup
 
-  final String version = '1.0.1';
+  final String version = '1.1.0';
 
   String salaryTitle = '';
   String salaryDecription = '';
@@ -20,9 +22,24 @@ class _HomeState extends State<Home> {
 
   Salary salary;
 
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    super.dispose();
+  Timer timer;
+
+  bool isWorkingNow = false;
+  int activeIndex;
+  Color listColor = Colors.white;
+
+  void updateEverything() {
+    print('se llamo al update everything. is working $isWorkingNow');
+    timer = Timer.periodic(Duration(seconds: 10), (t) {
+      if (salaries.isNotEmpty) {
+        setState(() {
+          for (int i = 0; i < salaries.length; i++) {
+            salaries[i].getTotalSalary();
+            salaries[i].getTotalTimeWorked();
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -68,44 +85,59 @@ class _HomeState extends State<Home> {
       // shrinkWrap: true,
       itemCount: salaries.length,
       itemBuilder: (context, index) {
+        // focusColor(index);
         return Padding(
           padding: const EdgeInsets.fromLTRB(4, 1, 4, 1),
           child: Card(
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  flex: 3,
-                  child: ListTile(
-                    title: Text(salaries[index].title),
-                    onTap: () async {
-                      //TODO: ver como ir a la pagina month
-                      addIntToSharedPreference('index', index);
-                      dynamic result = await Navigator.of(
-                              context) //se va a month con el salario elegido
-                          .pushNamed('/month', arguments: salaries[index]);
-                      salaries[index] =
-                          result; //con esta linea se recibe lo de la page month
-                      updateDataBase(index, salaries[index]);
-                    },
-                    subtitle: Text(salaries[index].description),
-                    onLongPress: () {
-                      _deleteSalary(index);
-                    }, //!************Borrar Ingresos***************!
+            child: Container(
+              color: (index == activeIndex && isWorkingNow == true)
+                  ? Colors.red[200]
+                  : Colors.white,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child: ListTile(
+                      title: Text(salaries[index].title),
+                      onTap: () async {
+                        if (index != activeIndex && isWorkingNow) {
+                          _errorActiveCounter();
+                          //si hay un contador activo, pero en otro salario
+                          print(
+                              'Error: Hay un contador activo en otro salario');
+                        } else {
+                          addIntToSharedPreference('index', index);
+                          dynamic result = await Navigator.of(
+                                  context) //se va a month con el salario elegido
+                              .pushNamed('/month', arguments: salaries[index]);
+                          salaries[index] =
+                              result; //con esta linea se recibe lo de la page month
+                          updateDataBase(index, salaries[index]);
+                          _checkIfIsWorking();
+                          // else
+                          //   timer.cancel();
+                        }
+                      },
+                      subtitle: Text(salaries[index].description),
+                      onLongPress: () {
+                        _deleteSalary(index);
+                      }, //!************Borrar Ingresos***************!
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    children: <Widget>[
-                      // Text(''),
-                      Text(
-                          'Horas totales: ${salaries[index].getTotalTimeWorked()}'),
-                      Text(
-                          'Salario Total: \$${salaries[index].getTotalSalary().toString()}')
-                    ],
-                  ),
-                )
-              ],
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      children: <Widget>[
+                        // Text(''),
+                        Text(
+                            'Horas totales: ${salaries[index].getTotalTimeWorked()}'),
+                        Text(
+                            'Salario Total: \$${salaries[index].getTotalSalary().toString()}')
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         );
@@ -206,11 +238,18 @@ class _HomeState extends State<Home> {
                           onPressed: () {
                             if (_formKey.currentState.validate()) {
                               _formKey.currentState.save();
-                              setState(() {
-                                salaries.removeAt(index);
-                                deleteSalaryFromDataBase(index);
-                              });
-                              Navigator.pop(context, []);
+                              if (isWorkingNow && index == activeIndex) {
+                                Navigator.pop(context, []);
+                                _errorDeleteActiveCounter(context);
+                                // salaries[index].last().finishDayWork();
+                                // addBoolToSharedPreference('wasStarted', false);
+                              } else {
+                                setState(() {
+                                  salaries.removeAt(index);
+                                  deleteSalaryFromDataBase(index);
+                                });
+                                Navigator.pop(context, []);
+                              }
                             }
                           },
                         ),
@@ -263,11 +302,84 @@ class _HomeState extends State<Home> {
     );
   }
 
+  void _checkIfIsWorking() async {
+    isWorkingNow = await checkIfWasStarted();
+    print('is working : $isWorkingNow');
+    if (isWorkingNow ?? false) {
+      updateEverything();
+      activeIndex = await getIntValuesSharedPreference('index');
+    }
+    setState(() {
+      activeIndex;
+    });
+  }
+
+  checkIfWasStarted() async =>
+      await getBoolValuesSharedPreference('wasStarted');
+
+  Widget _errorActiveCounter() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Error: Ya hay un contador activo"),
+          content: new Text(
+              'En "${salaries[activeIndex].title}" ya hay un contador activo. Por favor termine ese antes de comenzar otro.'),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Cerrar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _errorDeleteActiveCounter(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Error: No se puede eliminar"),
+          content: new Text(
+              'No se puede eliminar "${salaries[activeIndex].title}" ya que en el hay un contador activo. Por favor termine ese antes de eliminarlo.'),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Cerrar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     // TODO: implement initState
-
+    print('initState');
+    // addIntToSharedPreference('index', 0);
     salaries = readListToTheDataBase();
+    _checkIfIsWorking();
+    print('is working desde el init: $isWorkingNow');
+
     super.initState();
+  }
+
+  void dispose() {
+    print('dispose');
+    timer.cancel();
+
+    // Clean up the controller when the widget is disposed.
+    super.dispose();
   }
 }

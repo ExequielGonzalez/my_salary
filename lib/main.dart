@@ -1,5 +1,6 @@
 /** 
-//TODO:Poder guardar desde month
+  //TODO: Arreglar que el salario acumulado en home se actualiza solo, aunque no deberia estar contando
+ * 
 //TODO:El Dialog de About no tiene que tener pixeles
 //TODO: Agregar pantalla emergente con ayuda para la aplicacion
 //TODO: Cuando creas un nuevo Salary, te mande directamente a la pagina month

@@ -43,7 +43,7 @@ class _MonthState extends State<Month> {
 
   @override
   Widget build(BuildContext context) {
-    print('build');
+    // print('build');
     currentSalary = ModalRoute.of(context).settings.arguments;
     salaryPerHour = currentSalary.last().salaryPerHour;
 
@@ -106,6 +106,11 @@ class _MonthState extends State<Month> {
                         isStarted = !isStarted;
                         startStop = isStarted ? 'finalizar' : 'empezar';
                       });
+                      if (isStarted == true)
+                        addBoolToSharedPreference('wasStarted', true);
+                      else {
+                        addBoolToSharedPreference('wasStarted', false);
+                      }
                     },
                     child: Text(
                         startStop), //TODO: cambiar por el metodo empezar del a page home
@@ -209,13 +214,8 @@ class _MonthState extends State<Month> {
 
   @override
   void initState() {
-    print('InitState');
+    // print('InitState');
     wasStarted = checkIfWasStarted();
-    // if (wasStarteds) {
-    //   print('$wasStarteds');
-    //   isStarted = true;
-    //   currentSalary.last().setSecondsWorked();
-    // }
     wasStarted.then((onValue) {
       print('$onValue');
       if (onValue) {
@@ -236,7 +236,7 @@ class _MonthState extends State<Month> {
 
   @override
   void dispose() {
-    print('dispose');
+    // print('dispose');
     timer.cancel();
     // Navigator.pop(context, currentSalary);
     // currentSalary.last().finishDayWork();
