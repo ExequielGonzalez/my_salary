@@ -20,6 +20,7 @@ import 'package:mi_sueldo/pages/month.dart';
 import 'package:mi_sueldo/services/Salary.dart';
 import 'package:mi_sueldo/services/dailySalary.dart';
 import 'package:mi_sueldo/services/myTymer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:mi_sueldo/services/dailySalary.g.dart';
 
@@ -42,10 +43,18 @@ void main() async {
   Hive.registerAdapter(SalaryAdapter());
   Hive.registerAdapter(MyTimerAdapter());
   // await Hive.openBox('DailySalary');
-  runApp(MyApp());
+  final SharedPreferences sharedPreferences =
+      await SharedPreferences.getInstance();
+  runApp(MyApp(sharedPreferences: sharedPreferences));
 }
 
 class MyApp extends StatefulWidget {
+  final SharedPreferences sharedPreferences;
+
+  const MyApp({Key key, this.sharedPreferences})
+      : assert(sharedPreferences != null),
+        super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }

@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mi_sueldo/services/dailySalary.dart';
 import 'package:mi_sueldo/services/Salary.dart';
+import 'package:mi_sueldo/utils/Dialogs.dart';
 import 'package:mi_sueldo/utils/SharedPreferences.dart';
 import 'package:mi_sueldo/utils/DataBaseHandler.dart';
+import 'package:mi_sueldo/utils/Strings.dart';
 
 class Month extends StatefulWidget {
   @override
@@ -27,14 +29,15 @@ class _MonthState extends State<Month> {
   DailySalary income; //aux variable
 
   var wasStarted;
-  var index;
+  var activeIndex;
   //variable usada para saber si la app se cerró mientras contaba
+
+  bool showMonthHelp = true;
 
   void updateEverything() {
     print('isStarted : $isStarted');
     timer = Timer.periodic(Duration(seconds: 1), (t) {
       if (isStarted) {
-        print('aca no deberia estar entrando');
         setState(() {
           currentSalary.last().updateSalary();
           currentSalary.getTotalSalary();
@@ -97,7 +100,7 @@ class _MonthState extends State<Month> {
                           income = DailySalary(salaryPerHour);
                           currentSalary.addIncome(income);
                         });
-                        updateDataBase(index, currentSalary);
+                        updateDataBase(activeIndex, currentSalary);
                       } else {
                         currentSalary.last().finishDayWork();
                         // setState(() {
@@ -106,7 +109,7 @@ class _MonthState extends State<Month> {
                       }
                       setState(() {
                         isStarted = !isStarted;
-                        startStop = isStarted ? 'finalizar' : 'empezar';
+                        startStop = isStarted ? 'Finalizar' : 'Empezar';
                       });
                       if (isStarted == true)
                         addBoolToSharedPreference('wasStarted', true);
@@ -198,9 +201,12 @@ class _MonthState extends State<Month> {
                           IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () {
-                              setState(() {
-                                currentSalary.remove(index);
-                              });
+                              if (currentSalary.index(index).isFinished) {
+                                //no se puede borrar si esta activo
+                                setState(() {
+                                  currentSalary.remove(index);
+                                });
+                              }
                             },
                           ),
                         ],
@@ -217,7 +223,7 @@ class _MonthState extends State<Month> {
   @override
   void initState() {
     // print('InitState');
-    checkIfWasStarted();
+    checkSharedPreferences();
 
     super.initState();
   }
@@ -237,17 +243,67 @@ class _MonthState extends State<Month> {
     super.dispose();
   }
 
-  void checkIfWasStarted() async {
+  void checkSharedPreferences() async {
     wasStarted = await getBoolValuesSharedPreference('wasStarted');
     print('is working : $wasStarted');
     if (wasStarted ?? false) {
       isStarted = true;
       currentSalary.last().setSecondsWorked();
-      startStop = isStarted ? 'finalizar' : 'empezar';
+      startStop = isStarted ? 'Finalizar' : 'Empezar';
     }
-    index = await getIntValuesSharedPreference('index');
+    activeIndex = await getIntValuesSharedPreference('index');
+    showMonthHelp = await getBoolValuesSharedPreference('monthHelp');
+    print('showMonthHelp $showMonthHelp');
+    if (showMonthHelp) helpDialogMonth(context);
+
     updateEverything();
   }
 
   getIndexSalary() => getIntValuesSharedPreference('index');
+
+  //!MOVER A utils/Dialogs.dart
+
+  Widget helpDialogMonth(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('$monthHelpTitle'),
+          content: Container(
+              child: Column(
+            children: <Widget>[
+              Text('$monthHelp'),
+              Row(
+                children: <Widget>[
+                  Checkbox(
+                      value: showMonthHelp,
+                      onChanged: (values) {
+                        // print('click $values - showMonthHelp $showMonthHelp');
+                        setState(() {
+                          showMonthHelp = values;
+                          print('click $values - showMonthHelp $showMonthHelp');
+                          Navigator.pop(context);
+                          helpDialogMonth(context);
+                        });
+                      }),
+                  Text('No volver a mostrar este mensaje'),
+                ],
+              )
+            ],
+          )),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cerrar'),
+              onPressed: () {
+                showMonthHelp = !showMonthHelp;
+                print('se guardo en showMonthHelp: $showMonthHelp');
+                addBoolToSharedPreference('monthHelp', showMonthHelp);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

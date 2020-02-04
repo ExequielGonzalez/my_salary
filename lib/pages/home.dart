@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:mi_sueldo/services/Salary.dart';
+import 'package:mi_sueldo/utils/Dialogs.dart';
 import 'package:mi_sueldo/utils/SharedPreferences.dart';
 import 'package:mi_sueldo/utils/DataBaseHandler.dart';
+import 'package:mi_sueldo/utils/Strings.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -30,6 +32,8 @@ class _HomeState extends State<Home> {
 
   String currentTimeWorked;
   String currentSalaryReceived;
+
+  bool showHomeHelp;
 
   void updateEverything() {
     print('se llamo al update everything. is working $isWorkingNow');
@@ -73,7 +77,8 @@ class _HomeState extends State<Home> {
               tooltip: 'configuración',
               onPressed: () {
                 setState(() {
-                  aboutInformation();
+                  aboutInformation(context);
+                  // helpDialog(context);
                 });
                 // Navigator.pushNamed(context, '/config');
               },
@@ -119,7 +124,7 @@ class _HomeState extends State<Home> {
                           salaries[index] =
                               result; //con esta linea se recibe lo de la page month
                           updateDataBase(index, salaries[index]);
-                          _checkIfIsWorking();
+                          checkSharedPreferences();
                           setState(() {
                             currentSalaryReceived = salaries[activeIndex]
                                 .getTotalSalary()
@@ -288,48 +293,6 @@ class _HomeState extends State<Home> {
         });
   }
 
-  Widget aboutInformation() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          child: AboutListTile(
-            dense: true,
-            icon: Icon(Icons.info),
-            child: Text("Información"),
-            aboutBoxChildren: <Widget>[
-              Text("Aplicación desarrollada por Gonzalez Exequiel"),
-              Text('Contacto: gonzalez-exequiel@hotmail.com'),
-            ],
-            applicationIcon: Image.asset(
-              'assets/logo.png',
-              fit: BoxFit.contain,
-              width: 100,
-            ),
-            applicationLegalese: '© 2020 All rights reserved',
-            applicationName: "Mi sueldo",
-            applicationVersion: "$version",
-          ),
-        );
-      },
-    );
-  }
-
-  void _checkIfIsWorking() async {
-    isWorkingNow = await checkIfWasStarted();
-    print('is working : $isWorkingNow');
-    if (isWorkingNow ?? false) {
-      updateEverything();
-      activeIndex = await getIntValuesSharedPreference('index');
-    }
-    setState(() {
-      activeIndex;
-    });
-  }
-
-  checkIfWasStarted() async =>
-      await getBoolValuesSharedPreference('wasStarted');
-
   Widget _errorActiveCounter() {
     showDialog(
       context: context,
@@ -376,13 +339,79 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Widget helpDialogHome(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('$homeHelpTitle'),
+          content: Container(
+              child: Column(
+            children: <Widget>[
+              Text('$homeHelp'),
+              Row(
+                children: <Widget>[
+                  Checkbox(
+                      value: showHomeHelp,
+                      onChanged: (values) {
+                        // print('click $values - showHomeHelp $showHomeHelp');
+                        setState(() {
+                          showHomeHelp = values;
+                          print('click $values - showHomeHelp $showHomeHelp');
+                          Navigator.pop(context);
+                          helpDialogHome(context);
+                        });
+                      }),
+                  Text('No volver a mostrar este mensaje'),
+                ],
+              ),
+            ],
+          )),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cerrar'),
+              onPressed: () {
+                showHomeHelp = !showHomeHelp;
+                print('se guardo en showHomeHelp: $showHomeHelp');
+                addBoolToSharedPreference('homeHelp', showHomeHelp);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void checkSharedPreferences() async {
+    showHomeHelp = await checkShowHomeHelp();
+    isWorkingNow = await checkIfWasStarted();
+    print('is working : $isWorkingNow');
+    if (isWorkingNow ?? false) {
+      updateEverything();
+      activeIndex = await getIntValuesSharedPreference('index');
+    }
+    print('aca showHomeHelp vale $showHomeHelp');
+    if (showHomeHelp) helpDialogHome(context);
+    setState(() {
+      activeIndex;
+    });
+  }
+
+  checkShowHomeHelp() async => await getBoolValuesSharedPreference('homeHelp');
+
+  checkIfWasStarted() async =>
+      await getBoolValuesSharedPreference('wasStarted');
+
   @override
   void initState() {
     // TODO: implement initState
+
     print('initState');
+
     // addIntToSharedPreference('index', 0);
     salaries = readListToTheDataBase();
-    _checkIfIsWorking();
+    checkSharedPreferences();
     print('is working desde el init: $isWorkingNow');
     currentSalaryReceived = salaries[activeIndex].getTotalSalary().toString();
     currentTimeWorked = salaries[activeIndex].getTotalTimeWorked();
@@ -391,7 +420,7 @@ class _HomeState extends State<Home> {
 
   void dispose() {
     print('dispose');
-    timer.cancel();
+    if (isWorkingNow) timer.cancel();
 
     // Clean up the controller when the widget is disposed.
     super.dispose();
