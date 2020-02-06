@@ -269,28 +269,31 @@ class _MonthState extends State<Month> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('$monthHelpTitle'),
-          content: Container(
-              child: Column(
-            children: <Widget>[
-              Text('$monthHelp'),
-              Row(
-                children: <Widget>[
-                  Checkbox(
-                      value: showMonthHelp,
-                      onChanged: (values) {
-                        // print('click $values - showMonthHelp $showMonthHelp');
-                        setState(() {
-                          showMonthHelp = values;
-                          print('click $values - showMonthHelp $showMonthHelp');
-                          Navigator.pop(context);
-                          helpDialogMonth(context);
-                        });
-                      }),
-                  Text('No volver a mostrar este mensaje'),
-                ],
-              )
-            ],
-          )),
+          content: SingleChildScrollView(
+            child: Container(
+                child: Column(
+              children: <Widget>[
+                Text('$monthHelp'),
+                Row(
+                  children: <Widget>[
+                    Checkbox(
+                        value: showMonthHelp,
+                        onChanged: (values) {
+                          // print('click $values - showMonthHelp $showMonthHelp');
+                          setState(() {
+                            showMonthHelp = values;
+                            print(
+                                'click $values - showMonthHelp $showMonthHelp');
+                            Navigator.pop(context);
+                            helpDialogMonth(context);
+                          });
+                        }),
+                    Text('No volver a mostrar este mensaje'),
+                  ],
+                )
+              ],
+            )),
+          ),
           actions: <Widget>[
             FlatButton(
               child: Text('Cerrar'),

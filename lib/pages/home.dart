@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mi_sueldo/services/Salary.dart';
 import 'package:mi_sueldo/utils/Dialogs.dart';
 import 'package:mi_sueldo/utils/SharedPreferences.dart';
@@ -34,6 +35,37 @@ class _HomeState extends State<Home> {
   String currentSalaryReceived;
 
   bool showHomeHelp;
+
+  //!Para el menú
+  CustomPopupMenu _selectedChoices = choices[0];
+
+  void _select(CustomPopupMenu choice) {
+    setState(() {
+      _selectedChoices = choice;
+      print("Seleccionaste: ${_selectedChoices.title}");
+      switch (_selectedChoices.title) {
+        case '¿Que hay de nuevo?':
+          showChangelog(context);
+          break;
+        case 'Información':
+          aboutInformation(context);
+          break;
+        case 'Mostrar ayudas':
+          addBoolToSharedPreference('monthHelp', true);
+          addBoolToSharedPreference('homeHelp', true);
+          helpDialogHome(context);
+          break;
+      }
+    });
+  }
+
+  bodyWidget() {
+    return Container(
+      child: SelectedOption(choice: _selectedChoices),
+    );
+  }
+
+  //!Para el menú
 
   void updateEverything() {
     print('se llamo al update everything. is working $isWorkingNow');
@@ -72,17 +104,18 @@ class _HomeState extends State<Home> {
           title: Text('Mi Sueldo'),
           centerTitle: true,
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.info_outline),
-              tooltip: 'configuración',
-              onPressed: () {
-                setState(() {
-                  aboutInformation(context);
-                  // helpDialog(context);
-                });
-                // Navigator.pushNamed(context, '/config');
-              },
-            ),
+            callMenu(context),
+            // IconButton(
+            //   icon: Icon(Icons.info_outline),
+            //   tooltip: 'configuración',
+            //   onPressed: () {
+            //     setState(() {
+            //       showInformation(context);
+            //       // helpDialog(context);
+            //     });
+            //     // Navigator.pushNamed(context, '/config');
+            //   },
+            // ),
           ],
         ),
         body: salaries?.isEmpty ?? true
@@ -345,28 +378,30 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('$homeHelpTitle'),
-          content: Container(
-              child: Column(
-            children: <Widget>[
-              Text('$homeHelp'),
-              Row(
-                children: <Widget>[
-                  Checkbox(
-                      value: showHomeHelp,
-                      onChanged: (values) {
-                        // print('click $values - showHomeHelp $showHomeHelp');
-                        setState(() {
-                          showHomeHelp = values;
-                          print('click $values - showHomeHelp $showHomeHelp');
-                          Navigator.pop(context);
-                          helpDialogHome(context);
-                        });
-                      }),
-                  Text('No volver a mostrar este mensaje'),
-                ],
-              ),
-            ],
-          )),
+          content: SingleChildScrollView(
+            child: Container(
+                child: Column(
+              children: <Widget>[
+                Text('$homeHelp'),
+                Row(
+                  children: <Widget>[
+                    Checkbox(
+                        value: showHomeHelp,
+                        onChanged: (values) {
+                          // print('click $values - showHomeHelp $showHomeHelp');
+                          setState(() {
+                            showHomeHelp = values;
+                            print('click $values - showHomeHelp $showHomeHelp');
+                            Navigator.pop(context);
+                            helpDialogHome(context);
+                          });
+                        }),
+                    Text('No volver a mostrar este mensaje'),
+                  ],
+                ),
+              ],
+            )),
+          ),
           actions: <Widget>[
             FlatButton(
               child: Text('Cerrar'),
@@ -379,6 +414,26 @@ class _HomeState extends State<Home> {
             ),
           ],
         );
+      },
+    );
+  }
+
+  callMenu(context) {
+    return PopupMenuButton<CustomPopupMenu>(
+      elevation: 3.2,
+      initialValue: choices[0],
+      onCanceled: () {
+        print('No seleccionaste nada del menú');
+      },
+      // tooltip: 'This is tooltip',
+      onSelected: _select,
+      itemBuilder: (BuildContext context) {
+        return choices.map((CustomPopupMenu choice) {
+          return PopupMenuItem<CustomPopupMenu>(
+            value: choice,
+            child: Text(choice.title),
+          );
+        }).toList();
       },
     );
   }
@@ -406,6 +461,16 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     // TODO: implement initState
+//!BORRAR
+    final firstDate = '2020-02-04';
+    List<String> asd = firstDate.split('-');
+    print('$asd');
+
+    final date = DateTime.parse(firstDate);
+    final date2 = DateTime.now();
+    final difference = date2.difference(date).inSeconds;
+    print("diferencia de fechas en dias     :" + difference.toString());
+    //!BORRAR
 
     print('initState');
 

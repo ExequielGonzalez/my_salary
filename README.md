@@ -35,6 +35,5 @@ V 1.1.0
 -Ahora se colorea el "salario" que esta activo actualmente (desde la página principal)
 -Si hay un contador activo, solo se puede acceder al salario que lo contiene, es decir el que se encuentra coloreado.
 -Ya no se puede borrar un contador activo.
-
-//Borrar: Cuando algún salario esta activo (sin contar el primero), el primero aun aumenta su sueldo, pero no su horario. No deberia alterarse
-//Borrar: creo que el problema esta en Month, por como se lee el SharedPreference. Copiar lo de home.
+-Ahora se muestran ayudas sobre como utilizar la aplicación la primera vez que abrís la misma.
+-Este historial de cambios es accesible al usuario.

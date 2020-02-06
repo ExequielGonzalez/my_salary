@@ -19,6 +19,8 @@ V 1.1.0
 -Ahora se colorea el "salario" que esta activo actualmente (desde la página principal)
 -Si hay un contador activo, solo se puede acceder al salario que lo contiene, es decir el que se encuentra coloreado.
 -Ya no se puede borrar un contador activo.
+-Ahora se muestran ayudas sobre como utilizar la aplicación la primera vez que abrís la misma.
+-Este historial de cambios es accesible al usuario.
 ''';
 
 final String homeHelpTitle = 'Bienvenido a “Mi Sueldo”. ';
