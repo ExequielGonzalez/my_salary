@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_sueldo/services/Salary.dart';
 import 'package:mi_sueldo/utils/Dialogs.dart';
@@ -15,6 +16,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final _formKey = GlobalKey<FormState>(); //para el popup
+
+  ScrollController _scrollController =
+      new ScrollController(); //para poner la list siempre on top cuando hay un nuevo item
 
   final String version = '1.1.0';
 
@@ -132,7 +136,11 @@ class _HomeState extends State<Home> {
   Widget _createSalaryList() {
     return ListView.builder(
       scrollDirection: Axis.vertical,
-      // shrinkWrap: true,
+      controller: _scrollController,
+      addRepaintBoundaries: true,
+      addAutomaticKeepAlives: true,
+      reverse: true,
+      shrinkWrap: true,
       itemCount: salaries.length,
       itemBuilder: (context, index) {
         // focusColor(index);
@@ -258,6 +266,8 @@ class _HomeState extends State<Home> {
                           });
                           salaryTitle = '';
                           salaryDecription = '';
+                          moveListItemToTop(_scrollController);
+
                           Navigator.pop(context, []);
                         }
                       },
@@ -464,11 +474,21 @@ class _HomeState extends State<Home> {
   checkIfWasStarted() async =>
       await getBoolValuesSharedPreference('wasStarted');
 
+  void moveListItemToTop(_scrollController) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    });
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     print('initState');
-
+    moveListItemToTop(_scrollController);
     // addIntToSharedPreference('index', 0);
     salaries = readListToTheDataBase();
     checkSharedPreferences();

@@ -244,11 +244,6 @@ class _MonthState extends State<Month> {
         duration: const Duration(milliseconds: 300),
       );
     });
-    // _scrollController.animateTo(
-    //   _scrollController.position.maxScrollExtent,
-    //   curve: Curves.easeOut,
-    //   duration: const Duration(milliseconds: 300),
-    // );
   }
 
   @override
