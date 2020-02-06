@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:mi_sueldo/services/dailySalary.dart';
 import 'package:mi_sueldo/services/Salary.dart';
 import 'package:mi_sueldo/utils/Dialogs.dart';
@@ -34,12 +35,16 @@ class _MonthState extends State<Month> {
 
   bool showMonthHelp = true;
 
+  ScrollController _scrollController =
+      new ScrollController(); //para poner la list siempre on top cuando hay un nuevo item
+
   void updateEverything() {
     print('isStarted : $isStarted');
     timer = Timer.periodic(Duration(seconds: 1), (t) {
       if (isStarted) {
         setState(() {
-          currentSalary.last().updateSalary();
+          // currentSalary.last().updateSalary();//!PRUEBA
+          // currentSalary.last().getSalary();
           currentSalary.getTotalSalary();
         });
       }
@@ -53,7 +58,14 @@ class _MonthState extends State<Month> {
     salaryPerHour = currentSalary.last().salaryPerHour;
 
     return WillPopScope(
-      onWillPop: () {}, //el boton back no hace nada
+      onWillPop: () {
+        if (isStarted == true)
+          addBoolToSharedPreference('wasStarted', true);
+        else {
+          addBoolToSharedPreference('wasStarted', false);
+        }
+        Navigator.pop(context, currentSalary);
+      },
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.amber[100],
@@ -81,7 +93,7 @@ class _MonthState extends State<Month> {
                   Container(
                     constraints: BoxConstraints(minWidth: 170, maxWidth: 300),
                     child: Text(
-                      'Total: \$${currentSalary.getTotalSalary().toString()}',
+                      'Total: \$${currentSalary.totalSalary.toString()}',
                       style: TextStyle(
                         letterSpacing: 2,
                         color: Colors.black,
@@ -100,6 +112,9 @@ class _MonthState extends State<Month> {
                           income = DailySalary(salaryPerHour);
                           currentSalary.addIncome(income);
                         });
+                        // SchedulerBinding.instance.addPostFrameCallback((_) {
+                        moveListItemToTop(_scrollController);
+                        // });
                         updateDataBase(activeIndex, currentSalary);
                       } else {
                         currentSalary.last().finishDayWork();
@@ -171,8 +186,9 @@ class _MonthState extends State<Month> {
               ),
               Flexible(
                 child: ListView.builder(
+                  controller: _scrollController,
                   addRepaintBoundaries: true,
-                  scrollDirection: Axis.vertical,
+                  // scrollDirection: Axis.vertical,
                   reverse: true, //la mas nueva arriba
                   addAutomaticKeepAlives: true,
 
@@ -186,7 +202,7 @@ class _MonthState extends State<Month> {
                           Container(
                               width: 100,
                               child: Text(
-                                  '\$ ${currentSalary.index(index).currentSalary}',
+                                  '\$ ${currentSalary.index(index).currentSalary.toString()}', //acá
                                   style: TextStyle())),
                           Expanded(
                             child: ListTile(
@@ -220,11 +236,28 @@ class _MonthState extends State<Month> {
     );
   }
 
+  void moveListItemToTop(_scrollController) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    });
+    // _scrollController.animateTo(
+    //   _scrollController.position.maxScrollExtent,
+    //   curve: Curves.easeOut,
+    //   duration: const Duration(milliseconds: 300),
+    // );
+  }
+
   @override
   void initState() {
     // print('InitState');
     checkSharedPreferences();
-
+    // SchedulerBinding.instance.addPostFrameCallback((_) {
+    moveListItemToTop(_scrollController);
+    // });
     super.initState();
   }
 

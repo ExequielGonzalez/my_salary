@@ -35,13 +35,12 @@ class Salary {
   }
 
   double getTotalSalary() {
+    //!PRUEBA, el de abajo funciona
     if (incomes.isNotEmpty) {
       totalSalary = 0;
-      for (int i = 0; i < incomes.length - 1; i++) {
-        totalSalary += incomes[i].currentSalary;
+      for (int i = 0; i < incomes.length; i++) {
+        totalSalary += incomes[i].getSalary();
       }
-      if (!incomes.last.isFinished) incomes.last.updateSalary();
-      totalSalary += incomes.last.currentSalary;
       totalSalary = totalSalary + fixedAmount;
       totalSalary = (totalSalary * 100).round().toDouble() /
           100; //redondear a la segunda cifra.
@@ -50,6 +49,23 @@ class Salary {
     } else
       return 0;
   }
+
+  // double getTotalSalary() {
+  //   if (incomes.isNotEmpty) {
+  //     totalSalary = 0;
+  //     for (int i = 0; i < incomes.length - 1; i++) {
+  //       totalSalary += incomes[i].currentSalary;
+  //     }
+  //     if (!incomes.last.isFinished) incomes.last.updateSalary();
+  //     totalSalary += incomes.last.currentSalary;
+  //     totalSalary = totalSalary + fixedAmount;
+  //     totalSalary = (totalSalary * 100).round().toDouble() /
+  //         100; //redondear a la segunda cifra.
+  //     //En este caso se redondea a dos cifras porque se agrego un 100, si se quieren 3 cifras hay que usar 1000 en su lugar
+  //     return totalSalary;
+  //   } else
+  //     return 0;
+  // }
 
   String getTotalTimeWorked() {
     int aux = 0;

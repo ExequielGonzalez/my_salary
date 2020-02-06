@@ -36,6 +36,7 @@ class DailySalary extends Salary {
       // this.salaryPerHour = salaryPerHour;
       this.currentDate = _timer.getDate();
       this.timeStarted = _timer.getTime();
+      this.firstDate = _timer.getDateUnformatted();
     }
   }
   void finishDayWork() {
@@ -64,6 +65,21 @@ class DailySalary extends Salary {
   void setSecondsWorked() {
     this.secondsWorked =
         secondsBetweenTwoTimes(this.timeStarted, _timer.getTime());
+  }
+
+  double getSalary() //!esto es un prueba
+  {
+    if (!isFinished) {
+      int sec =
+          (DateTime.now()).difference(DateTime.parse(this.firstDate)).inSeconds;
+      print('pasaron $sec segundos');
+      currentSalary = (sec * salaryPerHour) / 3600;
+      currentSalary = (currentSalary * 100).round().toDouble() /
+          100; //redondear a la segunda cifra.
+      //En este caso se redondea a dos cifras porque se agrego un 100, si se quieren 3 cifras hay que usar 1000 en su lugar
+      print('el salario total es: $currentSalary');
+    }
+    return currentSalary;
   }
 }
 

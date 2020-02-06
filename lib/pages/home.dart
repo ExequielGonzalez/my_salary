@@ -31,8 +31,8 @@ class _HomeState extends State<Home> {
   int activeIndex = 0;
   Color listColor = Colors.white;
 
-  String currentTimeWorked;
-  String currentSalaryReceived;
+  String currentTimeWorked = '00:00:00';
+  String currentSalaryReceived = '0.0';
 
   bool showHomeHelp;
 
@@ -73,12 +73,14 @@ class _HomeState extends State<Home> {
       if (salaries.isNotEmpty) {
         if (isWorkingNow) {
           print('isWorkingNow: $isWorkingNow - activeIndex: $activeIndex');
-          setState(() {
-            currentSalaryReceived =
-                salaries[activeIndex].getTotalSalary().toString();
-            currentTimeWorked =
-                salaries[activeIndex].getTotalTimeWorked().toString();
-          });
+          if (salaries.isNotEmpty) {
+            setState(() {
+              currentSalaryReceived =
+                  salaries[activeIndex].getTotalSalary().toString();
+              currentTimeWorked =
+                  salaries[activeIndex].getTotalTimeWorked().toString();
+            });
+          }
         }
       }
     });
@@ -86,41 +88,45 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.amber[100],
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.redAccent,
-          child: Text(
-            '+',
-            style: TextStyle(fontSize: 40),
+    return WillPopScope(
+      //para que el boton de back no haga nada
+      onWillPop: () {},
+      child: Scaffold(
+          backgroundColor: Colors.amber[100],
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.redAccent,
+            child: Text(
+              '+',
+              style: TextStyle(fontSize: 40),
+            ),
+            onPressed: () {
+              //!!!!!!!!!!!!!!!!!!!!!
+              _createNewSalary();
+            },
           ),
-          onPressed: () {
-            //!!!!!!!!!!!!!!!!!!!!!
-            _createNewSalary();
-          },
-        ),
-        appBar: AppBar(
-          backgroundColor: Colors.redAccent,
-          title: Text('Mi Sueldo'),
-          centerTitle: true,
-          actions: <Widget>[
-            callMenu(context),
-            // IconButton(
-            //   icon: Icon(Icons.info_outline),
-            //   tooltip: 'configuración',
-            //   onPressed: () {
-            //     setState(() {
-            //       showInformation(context);
-            //       // helpDialog(context);
-            //     });
-            //     // Navigator.pushNamed(context, '/config');
-            //   },
-            // ),
-          ],
-        ),
-        body: salaries?.isEmpty ?? true
-            ? Center(child: Text(''))
-            : _createSalaryList());
+          appBar: AppBar(
+            backgroundColor: Colors.redAccent,
+            title: Text('Mi Sueldo'),
+            centerTitle: true,
+            actions: <Widget>[
+              callMenu(context),
+              // IconButton(
+              //   icon: Icon(Icons.info_outline),
+              //   tooltip: 'configuración',
+              //   onPressed: () {
+              //     setState(() {
+              //       showInformation(context);
+              //       // helpDialog(context);
+              //     });
+              //     // Navigator.pushNamed(context, '/config');
+              //   },
+              // ),
+            ],
+          ),
+          body: salaries?.isEmpty ?? true
+              ? Center(child: Text(''))
+              : _createSalaryList()),
+    );
   }
 
   Widget _createSalaryList() {
@@ -461,25 +467,17 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     // TODO: implement initState
-//!BORRAR
-    final firstDate = '2020-02-04';
-    List<String> asd = firstDate.split('-');
-    print('$asd');
-
-    final date = DateTime.parse(firstDate);
-    final date2 = DateTime.now();
-    final difference = date2.difference(date).inSeconds;
-    print("diferencia de fechas en dias     :" + difference.toString());
-    //!BORRAR
-
     print('initState');
 
     // addIntToSharedPreference('index', 0);
     salaries = readListToTheDataBase();
     checkSharedPreferences();
     print('is working desde el init: $isWorkingNow');
-    currentSalaryReceived = salaries[activeIndex].getTotalSalary().toString();
-    currentTimeWorked = salaries[activeIndex].getTotalTimeWorked();
+    if (salaries.isNotEmpty) {
+      currentSalaryReceived = salaries[activeIndex].getTotalSalary().toString();
+      currentTimeWorked = salaries[activeIndex].getTotalTimeWorked();
+    } else
+      addIntToSharedPreference('index', 0);
     super.initState();
   }
 

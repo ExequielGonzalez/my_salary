@@ -54,6 +54,9 @@ class _StartingState extends State<Starting> {
 
     // sharedPreferences.remove('monthHelp');
     // sharedPreferences.remove('homeHelp');
+    // sharedPreferences.remove('index');
+    // sharedPreferences.remove('wasStarted');
+
     if (!sharedPreferences.containsKey('index')) {
       print('Creando "index" en sharedPreferences');
       addIntToSharedPreference('index', 0);

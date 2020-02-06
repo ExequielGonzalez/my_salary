@@ -30,6 +30,10 @@ class MyTimer {
     return DateFormat.Hms().format(DateTime.now()).toString();
   }
 
+  String getDateUnformatted() {
+    return DateTime.now().toString();
+  }
+
   int getDaysFromBeggining(String firstDate) {
     //!BORRAR
     final date = DateTime.parse(firstDate);
