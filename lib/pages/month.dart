@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:mi_sueldo/services/dailySalary.dart';
 import 'package:mi_sueldo/services/Salary.dart';
-import 'package:mi_sueldo/utils/Dialogs.dart';
 import 'package:mi_sueldo/utils/SharedPreferences.dart';
 import 'package:mi_sueldo/utils/DataBaseHandler.dart';
 import 'package:mi_sueldo/utils/Strings.dart';
