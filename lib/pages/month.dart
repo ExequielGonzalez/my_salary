@@ -247,6 +247,7 @@ class _MonthState extends State<Month> {
 
   @override
   void initState() {
+//    startStop = currentSalary.last().isFinished ? 'Empezar' : 'Finalizar';
     // print('InitState');
     checkSharedPreferences();
     // SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -275,8 +276,10 @@ class _MonthState extends State<Month> {
     print('is working : $wasStarted');
     if (wasStarted ?? false) {
       isStarted = true;
-      currentSalary.last().setSecondsWorked();
-      startStop = isStarted ? 'Finalizar' : 'Empezar';
+      // currentSalary.last().setSecondsWorked();
+      setState(() {
+        startStop = isStarted ? 'Finalizar' : 'Empezar';
+      });
     }
     activeIndex = await getIntValuesSharedPreference('index');
     showMonthHelp = await getBoolValuesSharedPreference('monthHelp');
