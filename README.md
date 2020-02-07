@@ -37,3 +37,6 @@ V 1.1.0
 -Ya no se puede borrar un contador activo.
 -Ahora se muestran ayudas sobre como utilizar la aplicación la primera vez que abrís la misma.
 -Este historial de cambios es accesible al usuario.
+
+V 1.1.1
+-La aplicación ahora se puede compartir.

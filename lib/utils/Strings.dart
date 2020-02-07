@@ -21,6 +21,9 @@ V 1.1.0
 -Ya no se puede borrar un contador activo.
 -Ahora se muestran ayudas sobre como utilizar la aplicación la primera vez que abrís la misma.
 -Este historial de cambios es accesible al usuario.
+
+V 1.1.1
+-La aplicación ahora se puede compartir.
 ''';
 
 final String homeHelpTitle = 'Bienvenido a “Mi Sueldo”. ';
@@ -42,7 +45,10 @@ Espero que encuentres esta aplicación útil.
 final String monthHelpTitle = '¡Excelente, ya creaste tu primer salario!';
 
 final String monthHelp = '''
-Acá podes registrar cada uno de tus periodos de trabajo. Para eso solo debes ingresar un salario por hora y presionar “Empezar”. Esto registrara el horario de comienzo, el de finalización y la fecha en que se realizó.
+¡Porque cada segundo cuenta!
+
+Acá podes registrar cada uno de tus periodos de trabajo. Para eso solo debes ingresar un salario por hora y presionar “Empezar”.
+ Esto registrara el horario de comienzo, el de finalización y la fecha en que se realizó.
 
 Para finalizar un periodo de trabajo debes presionar “Finalizar”.
 

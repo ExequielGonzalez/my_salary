@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:intl/intl.dart';
 import 'package:mi_sueldo/services/Salary.dart';
 import 'package:mi_sueldo/utils/Dialogs.dart';
 import 'package:mi_sueldo/utils/SharedPreferences.dart';
 import 'package:mi_sueldo/utils/DataBaseHandler.dart';
 import 'package:mi_sueldo/utils/Strings.dart';
+import 'package:share/share.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -58,6 +58,9 @@ class _HomeState extends State<Home> {
           addBoolToSharedPreference('monthHelp', true);
           addBoolToSharedPreference('homeHelp', true);
           helpDialogHome(context);
+          break;
+        case 'Compartir':
+          share(context);
           break;
       }
     });
@@ -447,7 +450,18 @@ class _HomeState extends State<Home> {
         return choices.map((CustomPopupMenu choice) {
           return PopupMenuItem<CustomPopupMenu>(
             value: choice,
-            child: Text(choice.title),
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Icon(
+                    choice.icon,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(choice.title),
+              ],
+            ),
           );
         }).toList();
       },
@@ -484,11 +498,22 @@ class _HomeState extends State<Home> {
     });
   }
 
+  share(context) {
+    // final RenderBox box = context.findRenderObject();
+    final String link =
+        'https://frputneduar-my.sharepoint.com/:f:/g/personal/exequielgonzalez_alu_frp_utn_edu_ar/EqAYPdZuldFIhOO84vsRddMBpnMdo-aTChnCjYbRzymXLQ?e=LClkPr';
+    Share.share(
+      '¡Proba la nueva version de Mi sueldo(v$version)! \nDescargala ya desde: $link',
+      // subject:
+      //     'https://frputneduar-my.sharepoint.com/:u:/g/personal/exequielgonzalez_alu_frp_utn_edu_ar/ESSsCaZroy9LgljuCicnnIIBGd0DiY2JoiEYiM_rjau_ng?e=9wOvey',
+      // sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size,
+    );
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     print('initState');
-    moveListItemToTop(_scrollController);
     // addIntToSharedPreference('index', 0);
     salaries = readListToTheDataBase();
     checkSharedPreferences();
@@ -496,8 +521,10 @@ class _HomeState extends State<Home> {
     if (salaries.isNotEmpty) {
       currentSalaryReceived = salaries[activeIndex].getTotalSalary().toString();
       currentTimeWorked = salaries[activeIndex].getTotalTimeWorked();
+      moveListItemToTop(_scrollController);
     } else
       addIntToSharedPreference('index', 0);
+
     super.initState();
   }
 

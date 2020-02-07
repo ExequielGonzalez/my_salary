@@ -14,6 +14,7 @@ List<CustomPopupMenu> choices = <CustomPopupMenu>[
   CustomPopupMenu(title: 'Mostrar ayudas', icon: Icons.short_text),
   CustomPopupMenu(title: '¿Que hay de nuevo?', icon: Icons.help),
   CustomPopupMenu(title: 'Información', icon: Icons.info),
+  CustomPopupMenu(title: 'Compartir', icon: Icons.share)
 ];
 
 //!En vez de esto puedo llamar distintos dialog

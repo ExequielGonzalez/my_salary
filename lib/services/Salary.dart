@@ -94,7 +94,6 @@ class Salary {
       return incomes[index];
     else
       return DailySalary(0);
-    ;
   }
 
   void remove(index) {

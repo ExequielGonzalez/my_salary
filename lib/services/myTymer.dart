@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
 
 import 'package:hive/hive.dart';
 
@@ -34,12 +32,12 @@ class MyTimer {
     return DateTime.now().toString();
   }
 
-  int getDaysFromBeggining(String firstDate) {
-    //!BORRAR
-    final date = DateTime.parse(firstDate);
-    final date2 = DateTime.now();
-    final difference = date2.difference(date).inDays;
-    print("abc     :" + difference.toString());
-    //!BORRAR
-  }
+  // int getDaysFromBeggining(String firstDate) {
+  //   //!BORRAR
+  //   final date = DateTime.parse(firstDate);
+  //   final date2 = DateTime.now();
+  //   final difference = date2.difference(date).inDays;
+  //   print("abc     :" + difference.toString());
+  //   //!BORRAR
+  // }
 }
