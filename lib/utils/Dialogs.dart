@@ -18,29 +18,29 @@ List<CustomPopupMenu> choices = <CustomPopupMenu>[
 ];
 
 //!En vez de esto puedo llamar distintos dialog
-class SelectedOption extends StatelessWidget {
-  CustomPopupMenu choice;
+// class SelectedOption extends StatelessWidget {
+//   CustomPopupMenu choice;
 
-  SelectedOption({Key key, this.choice}) : super(key: key);
+//   SelectedOption({Key key, this.choice}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(choice.icon, size: 140.0, color: Colors.white),
-            Text(
-              choice.title,
-              style: TextStyle(color: Colors.white, fontSize: 30),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       child: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: <Widget>[
+//             Icon(choice.icon, size: 140.0, color: Colors.white),
+//             Text(
+//               choice.title,
+//               style: TextStyle(color: Colors.white, fontSize: 30),
+//             )
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 Widget showInformation(context) {}
 //   String _selection;

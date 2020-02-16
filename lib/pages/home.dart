@@ -8,13 +8,52 @@ import 'package:mi_sueldo/utils/SharedPreferences.dart';
 import 'package:mi_sueldo/utils/DataBaseHandler.dart';
 import 'package:mi_sueldo/utils/Strings.dart';
 import 'package:share/share.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
+//!ADSSS
+const String testDevice = 'Mobile_id';
+//!ADSSS
+
 class _HomeState extends State<Home> {
+  //!ADSSSSSSSSSSSSSSSSSSSSSSSS
+
+  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
+    testDevices: testDevice != null ? <String>[testDevice] : null,
+    nonPersonalizedAds: true,
+    keywords: <String>['Game', 'Mario'],
+  );
+
+  BannerAd _bannerAd;
+  InterstitialAd _interstitialAd;
+//Banner Ads
+  BannerAd createBannerAd() {
+    return BannerAd(
+        adUnitId: BannerAd.testAdUnitId,
+        //Change BannerAd adUnitId with Admob ID
+        size: AdSize.smartBanner,
+        targetingInfo: targetingInfo,
+        listener: (MobileAdEvent event) {
+          print("BannerAd $event");
+        });
+  }
+
+//Interstitial Ads
+  InterstitialAd createInterstitialAd() {
+    return InterstitialAd(
+        adUnitId: InterstitialAd.testAdUnitId,
+        //Change Interstitial AdUnitId with Admob ID
+        targetingInfo: targetingInfo,
+        listener: (MobileAdEvent event) {
+          print("IntersttialAd $event");
+        });
+  }
+  //!ADSSSSSSSSSSSSSSSSSSSSSSSSS
+
   final _formKey = GlobalKey<FormState>(); //para el popup
 
   ScrollController _scrollController =
@@ -33,7 +72,6 @@ class _HomeState extends State<Home> {
 
   bool isWorkingNow = false;
   int activeIndex = 0;
-  Color listColor = Colors.white;
 
   String currentTimeWorked = '00:00:00';
   String currentSalaryReceived = '0.0';
@@ -66,11 +104,11 @@ class _HomeState extends State<Home> {
     });
   }
 
-  bodyWidget() {
-    return Container(
-      child: SelectedOption(choice: _selectedChoices),
-    );
-  }
+  // bodyWidget() {
+  //   return Container(
+  //     child: SelectedOption(choice: _selectedChoices),
+  //   );
+  // }
 
   //!Para el menú
 
@@ -99,21 +137,30 @@ class _HomeState extends State<Home> {
       //para que el boton de back no haga nada
       onWillPop: () {},
       child: Scaffold(
-          backgroundColor: Colors.amber[100],
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Colors.redAccent,
-            child: Text(
-              '+',
-              style: TextStyle(fontSize: 40),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(bottom: 80),
+            child: FloatingActionButton(
+              elevation: 12,
+              backgroundColor: Theme.of(context).accentColor,
+              child: Text(
+                '+',
+                style: TextStyle(fontSize: 40),
+              ),
+              onPressed: () {
+                //!!!!!!!!!!!!!!!!!!!!!
+                _createNewSalary();
+              },
             ),
-            onPressed: () {
-              //!!!!!!!!!!!!!!!!!!!!!
-              _createNewSalary();
-            },
           ),
           appBar: AppBar(
-            backgroundColor: Colors.redAccent,
-            title: Text('Mi Sueldo'),
+            // elevation: 6,
+            // backgroundColor: Colors.redAccent,
+            // backgroundColor: Theme.of(context).primaryColorDark,
+            title: Text(
+              'Mi Sueldo',
+              // style: Theme.of(context).textTheme.headline,
+            ),
             centerTitle: true,
             actions: <Widget>[
               callMenu(context),
@@ -150,10 +197,23 @@ class _HomeState extends State<Home> {
         return Padding(
           padding: const EdgeInsets.fromLTRB(4, 3, 4, 0),
           child: Card(
+            elevation: (index == activeIndex && isWorkingNow == true) ? 24 : 6,
+
+            shape: RoundedRectangleBorder(
+              side: BorderSide(
+                color: (index == activeIndex && isWorkingNow == true)
+                    ? Theme.of(context).accentColor
+                    : Theme.of(context).cardColor,
+                width: 1,
+              ),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(12.0),
+              ),
+            ),
+            // color: (index == activeIndex && isWorkingNow == true)
+            //     ? Theme.of(context).accentColor
+            //     : Theme.of(context).cardColor,
             child: Container(
-              color: (index == activeIndex && isWorkingNow == true)
-                  ? Colors.red[200]
-                  : Colors.white,
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -233,7 +293,7 @@ class _HomeState extends State<Home> {
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                         labelText: 'Título',
-                        labelStyle: TextStyle(color: Colors.redAccent),
+                        labelStyle: Theme.of(context).textTheme.subhead,
                       ),
                     ),
                   ),
@@ -248,14 +308,16 @@ class _HomeState extends State<Home> {
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                         labelText: 'Descripción',
-                        labelStyle: TextStyle(color: Colors.redAccent),
+                        labelStyle: Theme.of(context).textTheme.subhead,
                       ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: RaisedButton(
-                      child: Text("Crear"),
+                      child: Text(
+                        "Crear",
+                      ),
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           _formKey.currentState.save();
@@ -456,7 +518,7 @@ class _HomeState extends State<Home> {
                   padding: const EdgeInsets.only(right: 10),
                   child: Icon(
                     choice.icon,
-                    color: Colors.black,
+                    color: Theme.of(context).accentColor,
                   ),
                 ),
                 Text(choice.title),
@@ -500,8 +562,7 @@ class _HomeState extends State<Home> {
 
   share(context) {
     // final RenderBox box = context.findRenderObject();
-    final String link =
-        'https://frputneduar-my.sharepoint.com/:f:/g/personal/exequielgonzalez_alu_frp_utn_edu_ar/EqAYPdZuldFIhOO84vsRddMBpnMdo-aTChnCjYbRzymXLQ?e=LClkPr';
+    final String link = 'https://cutt.ly/miSueldo';
     Share.share(
       '¡Proba la nueva version de Mi sueldo(v$version)! \nDescargala ya desde: $link',
       // subject:
@@ -513,6 +574,20 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     // TODO: implement initState
+    //!ADSSS
+
+    // FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
+    // //Change appId With Admob Id
+    // _bannerAd = createBannerAd()
+    //   ..load()
+    //   ..show();
+    FirebaseAdMob.instance.initialize(appId: InterstitialAd.testAdUnitId);
+    //Change appId With Admob Id
+    _interstitialAd = createInterstitialAd()
+      ..load()
+      ..show();
+    //!ADSSS
+
     print('initState');
     // addIntToSharedPreference('index', 0);
     salaries = readListToTheDataBase();
@@ -529,6 +604,10 @@ class _HomeState extends State<Home> {
   }
 
   void dispose() {
+    //!ADSSS
+    _bannerAd.dispose();
+    _interstitialAd.dispose();
+    //!ADSSS
     print('dispose');
     if (isWorkingNow) timer.cancel();
 

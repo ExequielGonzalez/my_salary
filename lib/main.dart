@@ -1,5 +1,6 @@
 /** 
 //TODO: Dark mode
+//TODO: Poder tener mas de un contador activo, aunque solo uno por salario
 //TODO: exportar a CSV la informacion
 */
 
@@ -59,7 +60,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(),
+      theme: _buildTheme(),
       // initialRoute: '/',
       routes: {
         // '/': (context) => Starting(),
@@ -89,5 +90,62 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     Hive.close();
     super.dispose();
+  }
+
+  ThemeData _buildTheme() {
+    final ThemeData base = ThemeData.dark();
+    return base.copyWith(
+      textTheme: _buildMyTextTheme(base.textTheme),
+      primaryTextTheme: _buildMyTextTheme(base.primaryTextTheme),
+      accentTextTheme: _buildMyTextTheme(base.accentTextTheme),
+      brightness: Brightness.dark,
+      primaryColorDark: Colors.grey[900],
+      primaryColor: Colors.orange[200],
+      accentColor: Colors.amber[200],
+      buttonTheme: ButtonThemeData(
+        buttonColor: Colors.amber[200],
+        textTheme: ButtonTextTheme.primary,
+      ),
+      appBarTheme: AppBarTheme(
+        elevation: 6,
+        color: Colors.grey[900],
+        textTheme: TextTheme(
+          title: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w500),
+        ),
+      ),
+      cardTheme: CardTheme(
+        elevation: 6,
+        shape: RoundedRectangleBorder(
+          // side: BorderSide(color: Colors.white70, width: 1),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(12.0),
+          ),
+        ),
+      ),
+    );
+  }
+
+  TextTheme _buildMyTextTheme(TextTheme base) {
+    return base
+        .copyWith(
+          headline: base.headline
+              .copyWith(fontSize: 20.0, fontWeight: FontWeight.w500),
+          title: base.title.copyWith(
+              fontSize: 18.0, fontWeight: FontWeight.w400, letterSpacing: 2),
+          subhead: base.subhead
+              .copyWith(fontSize: 16.0, fontWeight: FontWeight.w400),
+          body1:
+              base.body1.copyWith(fontSize: 14.0, fontWeight: FontWeight.w400),
+          body2:
+              base.body2.copyWith(fontSize: 14.0, fontWeight: FontWeight.w500),
+          caption: base.caption.copyWith(
+            fontWeight: FontWeight.w400,
+            fontSize: 12.0,
+          ),
+        )
+        .apply(
+          displayColor: Colors.white,
+          bodyColor: Colors.white,
+        );
   }
 }

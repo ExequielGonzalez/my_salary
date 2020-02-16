@@ -12,7 +12,7 @@ class _ConfigState extends State<Config> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.amber[100],
+      backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
         title: Text('Información'),
       ),

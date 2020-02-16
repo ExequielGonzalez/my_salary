@@ -43,6 +43,7 @@ class DailySalary extends Salary {
     if (!isFinished) {
       _internalTimer.cancel();
       timeEnded = _timer.getTime();
+      this.lastDate = _timer.getDateUnformatted();
     }
     isFinished = true;
   }
@@ -57,9 +58,17 @@ class DailySalary extends Salary {
 
   int secondsTotalWorked() {
     if (this.timeEnded == 'En curso...')
-      return secondsBetweenTwoTimes(this.timeStarted, _timer.getTime());
-    else
-      return secondsBetweenTwoTimes(this.timeStarted, this.timeEnded);
+      return (DateTime.now())
+          .difference(DateTime.parse(this.firstDate))
+          .inSeconds;
+    else {
+      if (lastDate.isNotEmpty)
+        return DateTime.parse(this.lastDate)
+            .difference(DateTime.parse(this.firstDate))
+            .inSeconds;
+      else
+        return secondsBetweenTwoTimes(this.timeStarted, this.timeEnded);
+    }
   }
 
   void setSecondsWorked() {

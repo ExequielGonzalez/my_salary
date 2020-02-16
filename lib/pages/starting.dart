@@ -13,12 +13,12 @@ class _StartingState extends State<Starting> {
   Widget build(BuildContext context) {
     return Center(
       child: Scaffold(
-        backgroundColor: Colors.amber[100],
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SpinKitFadingCube(
-              color: Colors.redAccent,
+              color: Theme.of(context).accentColor,
               size: 50.0,
             ),
             SizedBox(height: 30),
@@ -27,7 +27,7 @@ class _StartingState extends State<Starting> {
               style: TextStyle(
                 fontSize: 30,
                 letterSpacing: 2,
-                color: Colors.redAccent,
+                color: Theme.of(context).accentColor,
               ),
             )
           ],
@@ -39,7 +39,7 @@ class _StartingState extends State<Starting> {
   @override
   void initState() {
     // removeValues('homeHelp');
-    asdsa();
+    setSharedPreferences();
     // Future.delayed(const Duration(seconds: 0), () {
     //   //TODO:volver a 3 segundos
     //   Navigator.pushReplacementNamed(context, '/home');
@@ -49,7 +49,7 @@ class _StartingState extends State<Starting> {
     super.initState();
   }
 
-  void asdsa() async {
+  void setSharedPreferences() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     // sharedPreferences.remove('monthHelp');
