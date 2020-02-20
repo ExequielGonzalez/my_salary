@@ -101,7 +101,7 @@ class _MonthState extends State<Month> {
               height: 50,
               color: Theme.of(context).accentColor,
             ),
-            Flexible(
+            Expanded(
               child: ListView.builder(
                 controller: _scrollController,
                 addRepaintBoundaries: true,
@@ -118,9 +118,12 @@ class _MonthState extends State<Month> {
                       children: <Widget>[
                         Container(
                             width: width * 0.22,
-                            child: Text(
-                                '\$ ${currentSalary.index(index).currentSalary.toString()}', //acá
-                                style: TextStyle())),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                  '\$ ${currentSalary.index(index).currentSalary.toString()}', //acá
+                                  style: TextStyle()),
+                            )),
                         Expanded(
                           child: ListTile(
                             //  onTap: ,no es necesario que hagan nada cuando se presionen
@@ -223,7 +226,7 @@ class _MonthState extends State<Month> {
               height: height * 0.1,
               width: width * 0.95,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 180),
+                padding: const EdgeInsets.all(8),
                 child: _startStopButton(context),
               ),
             )
@@ -471,7 +474,7 @@ class _MonthState extends State<Month> {
     );
   }
 
-  RaisedButton _startStopButton(context) {
+  Widget _startStopButton(context) {
     print('se apretó el boton empezar');
     return RaisedButton(
       onPressed: () {

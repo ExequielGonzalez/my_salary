@@ -10,8 +10,11 @@
         android:label="Mi sueldo"
         android:icon="@mipmap/applogo">
         <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-8405433680296878~2965474223"/>
+      android:name="com.google.android.gms.ads.APPLICATION_ID"
+      android:value="ca-app-pub-3940256099942544~3347511713"/>
+        <!-- <meta-data -->
+            <!-- android:name="com.google.android.gms.ads.APPLICATION_ID" -->
+            <!-- android:value="ca-app-pub-8405433680296878~2965474223"/> -->
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

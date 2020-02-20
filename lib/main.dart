@@ -3,7 +3,7 @@
 //TODO: Poder tener mas de un contador activo, aunque solo uno por salario
 //TODO: exportar a CSV la informacion
 */
-
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hive/hive.dart';
@@ -34,6 +34,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   final appDocumentDir = await path_provider.getApplicationDocumentsDirectory();
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(DailySalaryAdapter());
@@ -42,6 +43,8 @@ void main() async {
   // await Hive.openBox('DailySalary');
   final SharedPreferences sharedPreferences =
       await SharedPreferences.getInstance();
+  Admob.initialize("com.example.mi_sueldo");
+
   runApp(MyApp(sharedPreferences: sharedPreferences));
 }
 

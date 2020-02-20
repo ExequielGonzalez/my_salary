@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:mi_sueldo/services/Salary.dart';
@@ -8,58 +9,20 @@ import 'package:mi_sueldo/utils/SharedPreferences.dart';
 import 'package:mi_sueldo/utils/DataBaseHandler.dart';
 import 'package:mi_sueldo/utils/Strings.dart';
 import 'package:share/share.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 
 class Home extends StatefulWidget {
   @override
+  GlobalKey key = GlobalKey();
   _HomeState createState() => _HomeState();
 }
 
-//!ADSSS
-const String testDevice = 'Mobile_id';
-//!ADSSS
-
 class _HomeState extends State<Home> {
-  //!ADSSSSSSSSSSSSSSSSSSSSSSSS
-
-  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-    testDevices: testDevice != null ? <String>[testDevice] : null,
-    nonPersonalizedAds: true,
-    keywords: <String>['Game', 'Mario'],
-  );
-
-  BannerAd _bannerAd;
-  InterstitialAd _interstitialAd;
-//Banner Ads
-  BannerAd createBannerAd() {
-    return BannerAd(
-        adUnitId: BannerAd.testAdUnitId,
-        //Change BannerAd adUnitId with Admob ID
-        size: AdSize.smartBanner,
-        targetingInfo: targetingInfo,
-        listener: (MobileAdEvent event) {
-          print("BannerAd $event");
-        });
-  }
-
-//Interstitial Ads
-  InterstitialAd createInterstitialAd() {
-    return InterstitialAd(
-        adUnitId: InterstitialAd.testAdUnitId,
-        //Change Interstitial AdUnitId with Admob ID
-        targetingInfo: targetingInfo,
-        listener: (MobileAdEvent event) {
-          print("IntersttialAd $event");
-        });
-  }
-  //!ADSSSSSSSSSSSSSSSSSSSSSSSSS
-
   final _formKey = GlobalKey<FormState>(); //para el popup
 
   ScrollController _scrollController =
       new ScrollController(); //para poner la list siempre on top cuando hay un nuevo item
 
-  final String version = '1.1.0';
+  final String version = '1.1.2';
 
   String salaryTitle = '';
   String salaryDecription = '';
@@ -164,22 +127,25 @@ class _HomeState extends State<Home> {
             centerTitle: true,
             actions: <Widget>[
               callMenu(context),
-              // IconButton(
-              //   icon: Icon(Icons.info_outline),
-              //   tooltip: 'configuración',
-              //   onPressed: () {
-              //     setState(() {
-              //       showInformation(context);
-              //       // helpDialog(context);
-              //     });
-              //     // Navigator.pushNamed(context, '/config');
-              //   },
-              // ),
             ],
           ),
-          body: salaries?.isEmpty ?? true
-              ? Center(child: Text(''))
-              : _createSalaryList()),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Container(
+                child: salaries.isEmpty ?? true
+                    ? Center(child: Text(''))
+                    : _createSalaryList(),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: AdmobBanner(
+                  adUnitId: getBannerAdUnitId(),
+                  adSize: AdmobBannerSize.BANNER,
+                ),
+              ),
+            ],
+          )),
     );
   }
 
@@ -189,7 +155,7 @@ class _HomeState extends State<Home> {
       controller: _scrollController,
       addRepaintBoundaries: true,
       addAutomaticKeepAlives: true,
-      reverse: true,
+      reverse: false,
       shrinkWrap: true,
       itemCount: salaries.length,
       itemBuilder: (context, index) {
@@ -574,19 +540,6 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     // TODO: implement initState
-    //!ADSSS
-
-    // FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
-    // //Change appId With Admob Id
-    // _bannerAd = createBannerAd()
-    //   ..load()
-    //   ..show();
-    FirebaseAdMob.instance.initialize(appId: InterstitialAd.testAdUnitId);
-    //Change appId With Admob Id
-    _interstitialAd = createInterstitialAd()
-      ..load()
-      ..show();
-    //!ADSSS
 
     print('initState');
     // addIntToSharedPreference('index', 0);
@@ -604,14 +557,14 @@ class _HomeState extends State<Home> {
   }
 
   void dispose() {
-    //!ADSSS
-    _bannerAd.dispose();
-    _interstitialAd.dispose();
-    //!ADSSS
     print('dispose');
     if (isWorkingNow) timer.cancel();
 
     // Clean up the controller when the widget is disposed.
     super.dispose();
   }
+}
+
+getBannerAdUnitId() {
+  return 'ca-app-pub-3940256099942544/6300978111';
 }
