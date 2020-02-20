@@ -179,58 +179,62 @@ class _HomeState extends State<Home> {
             // color: (index == activeIndex && isWorkingNow == true)
             //     ? Theme.of(context).accentColor
             //     : Theme.of(context).cardColor,
-            child: Container(
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 3,
-                    child: ListTile(
-                      title: Text(salaries[index].title),
-                      onTap: () async {
-                        if (index != activeIndex && isWorkingNow) {
-                          _errorActiveCounter();
-                          //si hay un contador activo, pero en otro salario
-                          print(
-                              'Error: Hay un contador activo en otro salario');
-                        } else {
-                          addIntToSharedPreference('index', index);
-                          dynamic result = await Navigator.of(
-                                  context) //se va a month con el salario elegido
-                              .pushNamed('/month', arguments: salaries[index]);
-                          salaries[index] =
-                              result; //con esta linea se recibe lo de la page month
-                          updateDataBase(index, salaries[index]);
-                          checkSharedPreferences();
-                          setState(() {
-                            currentSalaryReceived = salaries[activeIndex]
-                                .getTotalSalary()
-                                .toString();
-                            currentTimeWorked =
-                                salaries[activeIndex].getTotalTimeWorked();
-                          });
-                          // else
-                          //   timer.cancel();
-                        }
-                      },
-                      subtitle: Text(salaries[index].description),
-                      onLongPress: () {
-                        _deleteSalary(index);
-                      }, //!************Borrar Ingresos***************!
+            child: InkWell(
+              highlightColor: Theme.of(context).accentColor,
+
+              onLongPress: () {
+                _deleteSalary(index);
+              }, //!************Borrar Ingresos***************!
+              onTap: () async {
+                if (index != activeIndex && isWorkingNow) {
+                  _errorActiveCounter();
+                  //si hay un contador activo, pero en otro salario
+                  print('Error: Hay un contador activo en otro salario');
+                } else {
+                  addIntToSharedPreference('index', index);
+                  dynamic result = await Navigator.of(
+                          context) //se va a month con el salario elegido
+                      .pushNamed('/month', arguments: salaries[index]);
+                  salaries[index] =
+                      result; //con esta linea se recibe lo de la page month
+                  updateDataBase(index, salaries[index]);
+                  checkSharedPreferences();
+                  setState(() {
+                    currentSalaryReceived =
+                        salaries[activeIndex].getTotalSalary().toString();
+                    currentTimeWorked =
+                        salaries[activeIndex].getTotalTimeWorked();
+                  });
+                  // else
+                  //   timer.cancel();
+                }
+              },
+              child: Container(
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child: ListTile(
+                        title: Text(salaries[index].title),
+                        // onTap:
+                        subtitle: Text(salaries[index].description),
+                        // onLongPress:
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      children: <Widget>[
-                        // Text(''),
-                        Text(
-                            'Horas totales: ${(index == activeIndex) ? currentTimeWorked : salaries[index].getTotalTimeWorked()}'),
-                        Text(
-                            'Salario Total: \$${(index == activeIndex) ? currentSalaryReceived : salaries[index].totalSalary.toString()}')
-                      ],
-                    ),
-                  )
-                ],
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        children: <Widget>[
+                          // Text(''),
+                          Text(
+                              'Horas totales: ${(index == activeIndex) ? currentTimeWorked : salaries[index].getTotalTimeWorked()}'),
+                          Text(
+                              'Salario Total: \$${(index == activeIndex) ? currentSalaryReceived : salaries[index].totalSalary.toString()}')
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
