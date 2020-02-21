@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,10 @@ import 'package:mi_sueldo/utils/SharedPreferences.dart';
 import 'package:mi_sueldo/utils/DataBaseHandler.dart';
 import 'package:mi_sueldo/utils/Strings.dart';
 import 'package:share/share.dart';
+import 'package:mi_sueldo/utils/AdmobManager.dart';
 
 class Home extends StatefulWidget {
+  final _adKey = GlobalKey(); //para el banner Ad
   @override
   GlobalKey key = GlobalKey();
   _HomeState createState() => _HomeState();
@@ -43,6 +46,28 @@ class _HomeState extends State<Home> {
 
   //!Para el menú
   CustomPopupMenu _selectedChoices = choices[0];
+
+  AdmobInterstitial interstitialAd;
+
+  // AdmobInterstitial interstitialAd = AdmobInterstitial(
+  //     adUnitId: getInterstitialAdUnitId(),
+  //     listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+  //       if (event == AdmobAdEvent.loaded) interstitialAd.show();
+  //     });
+
+  AdmobInterstitial _admobInterstitial;
+
+  AdmobInterstitial createAdvert() {
+    return AdmobInterstitial(
+        adUnitId: getInterstitialAdUnitId(),
+        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+          if (event == AdmobAdEvent.loaded) {
+            _admobInterstitial.show();
+          } else if (event == AdmobAdEvent.closed) {
+            _admobInterstitial.dispose();
+          }
+        });
+  }
 
   void _select(CustomPopupMenu choice) {
     setState(() {
@@ -96,6 +121,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    // interstitialAd.load();
+
     return WillPopScope(
       //para que el boton de back no haga nada
       onWillPop: () {},
@@ -132,18 +159,22 @@ class _HomeState extends State<Home> {
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Container(
-                child: salaries.isEmpty ?? true
-                    ? Center(child: Text(''))
-                    : _createSalaryList(),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                child: AdmobBanner(
-                  adUnitId: getBannerAdUnitId(),
-                  adSize: AdmobBannerSize.BANNER,
+              Expanded(
+                child: Container(
+                  child: salaries.isEmpty ?? true
+                      ? Center(child: Text(''))
+                      : _createSalaryList(),
                 ),
               ),
+              Container(
+                  height: 75,
+                  // width: MediaQuery.of(context).size.width,
+                  child: ShowAdBanner(key: widget._adKey)
+                  // child: AdmobBanner(
+                  //   adUnitId: AdmobManager.test_banner_id,
+                  //   adSize: AdmobBannerSize.BANNER,
+                  // ),
+                  ),
             ],
           )),
     );
@@ -191,6 +222,7 @@ class _HomeState extends State<Home> {
                   //si hay un contador activo, pero en otro salario
                   print('Error: Hay un contador activo en otro salario');
                 } else {
+                  _admobInterstitial.load();
                   addIntToSharedPreference('index', index);
                   dynamic result = await Navigator.of(
                           context) //se va a month con el salario elegido
@@ -207,6 +239,16 @@ class _HomeState extends State<Home> {
                   });
                   // else
                   //   timer.cancel();
+                  // if (await interstitialAd.isLoaded) {
+                  //   interstitialAd.show();
+                  // }
+                  // AdmobInterstitial(
+                  //     adUnitId: getInterstitialAdUnitId(),
+                  //     listener:
+                  //         (AdmobAdEvent event, Map<String, dynamic> args) {
+                  //       if (event == AdmobAdEvent.loaded) interstitialAd.show();
+                  //     });
+                  createAdvert();
                 }
               },
               child: Container(
@@ -510,9 +552,9 @@ class _HomeState extends State<Home> {
     }
     print('aca showHomeHelp vale $showHomeHelp');
     if (showHomeHelp) helpDialogHome(context);
-    setState(() {
-      activeIndex;
-    });
+    // setState(() {
+    //   activeIndex;
+    // });
   }
 
   checkShowHomeHelp() async => await getBoolValuesSharedPreference('homeHelp');
@@ -543,6 +585,8 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    Admob admob = AdmobManager.initAdMob();
+    _admobInterstitial = createAdvert();
     // TODO: implement initState
 
     print('initState');
@@ -563,12 +607,77 @@ class _HomeState extends State<Home> {
   void dispose() {
     print('dispose');
     if (isWorkingNow) timer.cancel();
-
     // Clean up the controller when the widget is disposed.
     super.dispose();
   }
 }
 
-getBannerAdUnitId() {
-  return 'ca-app-pub-3940256099942544/6300978111';
+getInterstitialAdUnitId() {
+  return 'ca-app-pub-3940256099942544/1033173712';
+}
+
+String getBannerAdUnitId() {
+  if (Platform.isIOS) {
+    return 'ca-app-pub-3940256099942544/2934735716';
+  } else if (Platform.isAndroid) {
+    return 'ca-app-pub-3940256099942544/6300978111';
+  }
+  return null;
+}
+
+class ShowAdBanner extends StatefulWidget {
+  ShowAdBanner({@required Key key}) : super(key: key);
+
+  @override
+  _ShowAdBannerState createState() => _ShowAdBannerState();
+}
+
+class _ShowAdBannerState extends State<ShowAdBanner> {
+  // final _adBannerKey = UniqueKey(); //para el banner Ad
+
+  @override
+  Widget build(BuildContext context) {
+    return AdmobBanner(
+        // key: _adBannerKey,
+        adUnitId: getBannerAdUnitId(),
+        adSize: AdmobBannerSize.BANNER,
+        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+          switch (event) {
+            case AdmobAdEvent.loaded:
+              print('Admob banner loaded!');
+              break;
+
+            case AdmobAdEvent.opened:
+              print('Admob banner opened!');
+              break;
+
+            case AdmobAdEvent.closed:
+              print('Admob banner closed!');
+              break;
+
+            case AdmobAdEvent.failedToLoad:
+              print(
+                  'Admob banner failed to load. Error code: ${args['errorCode']}');
+              break;
+            case AdmobAdEvent.clicked:
+              // TODO: Handle this case.
+              break;
+            case AdmobAdEvent.impression:
+              // TODO: Handle this case.
+              break;
+            case AdmobAdEvent.leftApplication:
+              // TODO: Handle this case.
+              break;
+            case AdmobAdEvent.completed:
+              // TODO: Handle this case.
+              break;
+            case AdmobAdEvent.rewarded:
+              // TODO: Handle this case.
+              break;
+            case AdmobAdEvent.started:
+              // TODO: Handle this case.
+              break;
+          }
+        });
+  }
 }

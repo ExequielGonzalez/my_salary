@@ -1,3 +1,5 @@
+import 'dart:io';
+
 /** 
 //TODO: Dark mode
 //TODO: Poder tener mas de un contador activo, aunque solo uno por salario
@@ -43,7 +45,7 @@ void main() async {
   // await Hive.openBox('DailySalary');
   final SharedPreferences sharedPreferences =
       await SharedPreferences.getInstance();
-  Admob.initialize("com.example.mi_sueldo");
+  // Admob.initialize(getAppId());
 
   runApp(MyApp(sharedPreferences: sharedPreferences));
 }
@@ -151,4 +153,13 @@ class _MyAppState extends State<MyApp> {
           bodyColor: Colors.white,
         );
   }
+}
+
+String getAppId() {
+  if (Platform.isIOS) {
+    return 'ca-app-pub-3940256099942544~1458002511';
+  } else if (Platform.isAndroid) {
+    return 'ca-app-pub-3940256099942544~3347511713';
+  }
+  return null;
 }

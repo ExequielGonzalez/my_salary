@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:mi_sueldo/services/dailySalary.dart';
@@ -7,8 +9,11 @@ import 'package:mi_sueldo/services/Salary.dart';
 import 'package:mi_sueldo/utils/SharedPreferences.dart';
 import 'package:mi_sueldo/utils/DataBaseHandler.dart';
 import 'package:mi_sueldo/utils/Strings.dart';
+import 'package:mi_sueldo/utils/AdmobManager.dart';
 
 class Month extends StatefulWidget {
+  final _adKey = UniqueKey(); //para el banner Ad
+
   @override
   _MonthState createState() => _MonthState();
 }
@@ -35,6 +40,8 @@ class _MonthState extends State<Month> {
   //variable usada para saber si la app se cerró mientras contaba
 
   bool showMonthHelp = true;
+
+  int _cantDailySalary;
 
   ScrollController _scrollController =
       new ScrollController(); //para poner la list siempre on top cuando hay un nuevo item
@@ -101,8 +108,11 @@ class _MonthState extends State<Month> {
               height: 50,
               color: Theme.of(context).accentColor,
             ),
+
+            // _buildListView(),!!!
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
+                //
                 controller: _scrollController,
                 addRepaintBoundaries: true,
                 // scrollDirection: Axis.vertical,
@@ -111,7 +121,31 @@ class _MonthState extends State<Month> {
 
                 shrinkWrap: true,
                 itemCount: currentSalary.length(),
+                separatorBuilder: (context, index) {
+                  if (index % 4 == 0 && index != 0) {
+                    return Padding(
+                      padding: EdgeInsets.all(8),
+                      child: ShowAdBanner(key: widget._adKey),
+                      // child: AdmobBanner(
+                      //   adUnitId: getBannerAdUnitId(),
+                      //   adSize: AdmobBannerSize.BANNER,
+                      // ),
+                    );
+                  } else
+                    return Container(
+                      height: 0,
+                    );
+                },
                 itemBuilder: (context, index) {
+                  // if (index % 2 == 0) {
+                  //   Padding(
+                  //     padding: EdgeInsets.all(8),
+                  //     child: AdmobBanner(
+                  //       adUnitId: getBannerAdUnitId(),
+                  //       adSize: AdmobBannerSize.BANNER,
+                  //     ),
+                  //   );
+                  // }
                   // TODO:metodo para mostrar los ingresos diarios
                   return Card(
                     child: Row(
@@ -349,13 +383,20 @@ class _MonthState extends State<Month> {
 
   @override
   void initState() {
-//    startStop = currentSalary.last().isFinished ? 'Empezar' : 'Finalizar';
+    Admob admob = AdmobManager.initAdMob();
+
+    //    startStop = currentSalary.last().isFinished ? 'Empezar' : 'Finalizar';
     // print('InitState');
     checkSharedPreferences();
     // SchedulerBinding.instance.addPostFrameCallback((_) {
     moveListItemToTop(_scrollController);
     SchedulerBinding.instance.addPostFrameCallback((_) {
       salaryPerHour = currentSalary.last().salaryPerHour;
+      _cantDailySalary = currentSalary.length();
+      // _salaryWidgets = List<Widget>.generate(
+      //   currentSalary.length(),
+      //   (int index) => _buildSalaryWidgets(currentSalary, index),
+      // );
     });
 
     // });
@@ -475,9 +516,9 @@ class _MonthState extends State<Month> {
   }
 
   Widget _startStopButton(context) {
-    print('se apretó el boton empezar');
     return RaisedButton(
       onPressed: () {
+        print('se apretó el boton empezar');
         if (!isStarted) {
           setState(() {
             print(
@@ -508,6 +549,115 @@ class _MonthState extends State<Month> {
       child:
           Text(startStop), //TODO: cambiar por el metodo empezar del a page home
       //!revisar en el github, la primer version
+    );
+  }
+
+  // List<Widget> _salaryWidgets;
+
+  // Widget _buildSalaryWidgets(Salary currentSalary, int index) {
+  //   if (index % 2 == 0) {
+  //     _salaryWidgets.insert(
+  //         index,
+  //         Padding(
+  //           padding: EdgeInsets.all(8),
+  //           child: AdmobBanner(
+  //             adUnitId: getBannerAdUnitId(),
+  //             adSize: AdmobBannerSize.BANNER,
+  //           ),
+  //         ));
+  //   } else {
+  //     return Card(
+  //       child: Row(
+  //         children: <Widget>[
+  //           Container(
+  //               width: MediaQuery.of(context).size.width * 0.22,
+  //               child: Padding(
+  //                 padding: const EdgeInsets.all(8.0),
+  //                 child: Text(
+  //                     '\$ ${currentSalary.index(index).currentSalary.toString()}', //acá
+  //                     style: TextStyle()),
+  //               )),
+  //           Expanded(
+  //             child: ListTile(
+  //               //  onTap: ,no es necesario que hagan nada cuando se presionen
+  //               // title: Text('${incomes[index].currentDate}'),
+  //               title: Text('${currentSalary.index(index).currentDate}'),
+  //               subtitle: Text(
+  //                   '${currentSalary.index(index).timeStarted} - ${currentSalary.index(index).timeEnded}'),
+  //             ),
+  //           ),
+  //           IconButton(
+  //             icon: Icon(Icons.delete),
+  //             onPressed: () {
+  //               if (currentSalary.index(index).isFinished) {
+  //                 //no se puede borrar si esta activo
+  //                 setState(() {
+  //                   currentSalary.remove(index);
+  //                 });
+  //               }
+  //             },
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //   }
+  // }
+
+  // Widget _buildListView() {
+  //   // List<Widget> _salaryWidgets;
+  //   _salaryWidgets = List<Widget>.generate(
+  //     currentSalary.length(),
+  //     (int index) => _buildSalaryWidgets(currentSalary, index),
+  //   );
+  //   // _salaryWidgets.insert(
+  //   //     currentSalary.length(),
+  //   //     Padding(
+  //   //       padding: EdgeInsets.all(8),
+  //   //       child: AdmobBanner(
+  //   //         adUnitId: getBannerAdUnitId(),
+  //   //         adSize: AdmobBannerSize.BANNER,
+  //   //       ),
+  //   //     ));
+
+  //   return Expanded(
+  //       child: ListView(
+  //     controller: _scrollController,
+  //     addRepaintBoundaries: true,
+  //     // scrollDirection: Axis.vertical,
+  //     // reverse: true, //la mas nueva arriba
+  //     addAutomaticKeepAlives: true,
+
+  //     shrinkWrap: true,
+  //     // itemCount: currentSalary.length(),
+  //     children: _salaryWidgets,
+  //   ));
+  // }
+}
+
+String getBannerAdUnitId() {
+  if (Platform.isIOS) {
+    return 'ca-app-pub-3940256099942544/2934735716';
+  } else if (Platform.isAndroid) {
+    return 'ca-app-pub-3940256099942544/6300978111';
+  }
+  return null;
+}
+
+class ShowAdBanner extends StatefulWidget {
+  ShowAdBanner({@required Key key}) : super(key: key);
+
+  @override
+  _ShowAdBannerState createState() => _ShowAdBannerState();
+}
+
+class _ShowAdBannerState extends State<ShowAdBanner> {
+  // final _adBannerKey = UniqueKey(); //para el banner Ad
+  @override
+  Widget build(BuildContext context) {
+    return AdmobBanner(
+      // key: _adBannerKey,
+      adUnitId: getBannerAdUnitId(),
+      adSize: AdmobBannerSize.BANNER,
     );
   }
 }
