@@ -73,6 +73,10 @@ class _StartingState extends State<Starting> {
       print('Creando "monthHelp" en sharedPreferences');
       addBoolToSharedPreference('monthHelp', true);
     }
+    // if (!sharedPreferences.containsKey('timesAdSaw')) {
+    //   print('Creando "timerAdSaw" en sharedPreferences');
+    //   addIntToSharedPreference('timesAdSaw', 0);
+    // }
   }
 
   @override

@@ -44,17 +44,12 @@ class _HomeState extends State<Home> {
 
   bool showHomeHelp;
 
+  int timesAdSaw = 0; //para saber si tengo que mostrar un interstitial
+
   //!Para el menú
   CustomPopupMenu _selectedChoices = choices[0];
 
   AdmobInterstitial interstitialAd;
-
-  // AdmobInterstitial interstitialAd = AdmobInterstitial(
-  //     adUnitId: getInterstitialAdUnitId(),
-  //     listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-  //       if (event == AdmobAdEvent.loaded) interstitialAd.show();
-  //     });
-
   AdmobInterstitial _admobInterstitial;
 
   AdmobInterstitial createAdvert() {
@@ -69,6 +64,7 @@ class _HomeState extends State<Home> {
         });
   }
 
+  //!Para el menú
   void _select(CustomPopupMenu choice) {
     setState(() {
       _selectedChoices = choice;
@@ -92,14 +88,6 @@ class _HomeState extends State<Home> {
     });
   }
 
-  // bodyWidget() {
-  //   return Container(
-  //     child: SelectedOption(choice: _selectedChoices),
-  //   );
-  // }
-
-  //!Para el menú
-
   void updateEverything() {
     print('se llamo al update everything. is working $isWorkingNow');
     timer = Timer.periodic(Duration(seconds: 2), (t) {
@@ -121,8 +109,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    // interstitialAd.load();
-
     return WillPopScope(
       //para que el boton de back no haga nada
       onWillPop: () {},
@@ -133,9 +119,9 @@ class _HomeState extends State<Home> {
             child: FloatingActionButton(
               elevation: 12,
               backgroundColor: Theme.of(context).accentColor,
-              child: Text(
+              child: const Text(
                 '+',
-                style: TextStyle(fontSize: 40),
+                style: const TextStyle(fontSize: 40),
               ),
               onPressed: () {
                 //!!!!!!!!!!!!!!!!!!!!!
@@ -147,7 +133,7 @@ class _HomeState extends State<Home> {
             // elevation: 6,
             // backgroundColor: Colors.redAccent,
             // backgroundColor: Theme.of(context).primaryColorDark,
-            title: Text(
+            title: const Text(
               'Mi Sueldo',
               // style: Theme.of(context).textTheme.headline,
             ),
@@ -162,17 +148,15 @@ class _HomeState extends State<Home> {
               Expanded(
                 child: Container(
                   child: salaries.isEmpty ?? true
-                      ? Center(child: Text(''))
+                      ? const Center(child: Text(''))
                       : _createSalaryList(),
                 ),
               ),
               Container(
+                  //!Aca se muestra el banner
                   height: 75,
-                  // width: MediaQuery.of(context).size.width,
-                  child: ShowAdBanner(key: widget._adKey)
-                  // child: AdmobBanner(
-                  //   adUnitId: AdmobManager.test_banner_id,
-                  //   adSize: AdmobBannerSize.BANNER,
+                  child: const ShowAdBanner()
+
                   // ),
                   ),
             ],
@@ -204,7 +188,7 @@ class _HomeState extends State<Home> {
                 width: 1,
               ),
               borderRadius: const BorderRadius.all(
-                Radius.circular(12.0),
+                const Radius.circular(12.0),
               ),
             ),
             // color: (index == activeIndex && isWorkingNow == true)
@@ -222,7 +206,11 @@ class _HomeState extends State<Home> {
                   //si hay un contador activo, pero en otro salario
                   print('Error: Hay un contador activo en otro salario');
                 } else {
-                  _admobInterstitial.load();
+                  if (timesAdSaw == 0 || timesAdSaw % 3 == 0) {
+                    _admobInterstitial.load();
+                  } //mostrar el intestitial
+                  timesAdSaw += 1;
+
                   addIntToSharedPreference('index', index);
                   dynamic result = await Navigator.of(
                           context) //se va a month con el salario elegido
@@ -237,18 +225,6 @@ class _HomeState extends State<Home> {
                     currentTimeWorked =
                         salaries[activeIndex].getTotalTimeWorked();
                   });
-                  // else
-                  //   timer.cancel();
-                  // if (await interstitialAd.isLoaded) {
-                  //   interstitialAd.show();
-                  // }
-                  // AdmobInterstitial(
-                  //     adUnitId: getInterstitialAdUnitId(),
-                  //     listener:
-                  //         (AdmobAdEvent event, Map<String, dynamic> args) {
-                  //       if (event == AdmobAdEvent.loaded) interstitialAd.show();
-                  //     });
-                  createAdvert();
                 }
               },
               child: Container(
@@ -327,7 +303,7 @@ class _HomeState extends State<Home> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: RaisedButton(
-                      child: Text(
+                      child: const Text(
                         "Crear",
                       ),
                       onPressed: () {
@@ -368,9 +344,9 @@ class _HomeState extends State<Home> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text('¿Desea eliminar este ingreso?'),
+                  const Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: const Text('¿Desea eliminar este ingreso?'),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -378,7 +354,7 @@ class _HomeState extends State<Home> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         RaisedButton(
-                          child: Text('Eliminar'),
+                          child: const Text('Eliminar'),
                           onPressed: () {
                             if (_formKey.currentState.validate()) {
                               _formKey.currentState.save();
@@ -398,9 +374,9 @@ class _HomeState extends State<Home> {
                           },
                         ),
                         RaisedButton(
-                          child: Text(
+                          child: const Text(
                             'Cancelar',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           onPressed: () {
                             if (_formKey.currentState.validate()) {
@@ -425,13 +401,13 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Error: Ya hay un contador activo"),
+          title: const Text("Error: Ya hay un contador activo"),
           content: new Text(
               'En "${salaries[activeIndex].title}" ya hay un contador activo. Por favor termine ese antes de comenzar otro.'),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Cerrar"),
+              child: const Text("Cerrar"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -448,13 +424,13 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Error: No se puede eliminar"),
+          title: const Text("Error: No se puede eliminar"),
           content: new Text(
               'No se puede eliminar "${salaries[activeIndex].title}" ya que en el hay un contador activo. Por favor termine ese antes de eliminarlo.'),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Cerrar"),
+              child: const Text("Cerrar"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -489,7 +465,7 @@ class _HomeState extends State<Home> {
                             helpDialogHome(context);
                           });
                         }),
-                    Text('No volver a mostrar este mensaje'),
+                    const Text('No volver a mostrar este mensaje'),
                   ],
                 ),
               ],
@@ -497,7 +473,7 @@ class _HomeState extends State<Home> {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text('Cerrar'),
+              child: const Text('Cerrar'),
               onPressed: () {
                 showHomeHelp = !showHomeHelp;
                 print('se guardo en showHomeHelp: $showHomeHelp');
@@ -552,9 +528,6 @@ class _HomeState extends State<Home> {
     }
     print('aca showHomeHelp vale $showHomeHelp');
     if (showHomeHelp) helpDialogHome(context);
-    // setState(() {
-    //   activeIndex;
-    // });
   }
 
   checkShowHomeHelp() async => await getBoolValuesSharedPreference('homeHelp');
@@ -626,8 +599,8 @@ String getBannerAdUnitId() {
 }
 
 class ShowAdBanner extends StatefulWidget {
-  ShowAdBanner({@required Key key}) : super(key: key);
-
+  // const ShowAdBanner({@required Key key}) : super(key: key);
+  const ShowAdBanner({Key key}) : super(key: key);
   @override
   _ShowAdBannerState createState() => _ShowAdBannerState();
 }

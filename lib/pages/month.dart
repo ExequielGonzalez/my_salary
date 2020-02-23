@@ -124,13 +124,14 @@ class _MonthState extends State<Month> {
                 separatorBuilder: (context, index) {
                   if (index % 4 == 0 && index != 0) {
                     return Padding(
-                      padding: EdgeInsets.all(8),
-                      child: ShowAdBanner(key: widget._adKey),
-                      // child: AdmobBanner(
-                      //   adUnitId: getBannerAdUnitId(),
-                      //   adSize: AdmobBannerSize.BANNER,
-                      // ),
-                    );
+                        padding: EdgeInsets.all(8),
+                        // child: ShowAdBanner(key: widget._adKey),
+                        child: const ShowAdBanner()
+                        // child: AdmobBanner(
+                        //   adUnitId: getBannerAdUnitId(),
+                        //   adSize: AdmobBannerSize.BANNER,
+                        // ),
+                        );
                   } else
                     return Container(
                       height: 0,
@@ -465,7 +466,7 @@ class _MonthState extends State<Month> {
                             helpDialogMonth(context);
                           });
                         }),
-                    Text('No volver a mostrar este mensaje'),
+                    const Text('No volver a mostrar este mensaje'),
                   ],
                 )
               ],
@@ -473,7 +474,7 @@ class _MonthState extends State<Month> {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text('Cerrar'),
+              child: const Text('Cerrar'),
               onPressed: () {
                 showMonthHelp = !showMonthHelp;
                 print('se guardo en showMonthHelp: $showMonthHelp');
@@ -496,7 +497,7 @@ class _MonthState extends State<Month> {
           width: 1,
         ),
         borderRadius: const BorderRadius.all(
-          Radius.circular(8.0),
+          const Radius.circular(8.0),
         ),
       ),
       // color: Theme.of(context).cardColor,
@@ -551,87 +552,6 @@ class _MonthState extends State<Month> {
       //!revisar en el github, la primer version
     );
   }
-
-  // List<Widget> _salaryWidgets;
-
-  // Widget _buildSalaryWidgets(Salary currentSalary, int index) {
-  //   if (index % 2 == 0) {
-  //     _salaryWidgets.insert(
-  //         index,
-  //         Padding(
-  //           padding: EdgeInsets.all(8),
-  //           child: AdmobBanner(
-  //             adUnitId: getBannerAdUnitId(),
-  //             adSize: AdmobBannerSize.BANNER,
-  //           ),
-  //         ));
-  //   } else {
-  //     return Card(
-  //       child: Row(
-  //         children: <Widget>[
-  //           Container(
-  //               width: MediaQuery.of(context).size.width * 0.22,
-  //               child: Padding(
-  //                 padding: const EdgeInsets.all(8.0),
-  //                 child: Text(
-  //                     '\$ ${currentSalary.index(index).currentSalary.toString()}', //acá
-  //                     style: TextStyle()),
-  //               )),
-  //           Expanded(
-  //             child: ListTile(
-  //               //  onTap: ,no es necesario que hagan nada cuando se presionen
-  //               // title: Text('${incomes[index].currentDate}'),
-  //               title: Text('${currentSalary.index(index).currentDate}'),
-  //               subtitle: Text(
-  //                   '${currentSalary.index(index).timeStarted} - ${currentSalary.index(index).timeEnded}'),
-  //             ),
-  //           ),
-  //           IconButton(
-  //             icon: Icon(Icons.delete),
-  //             onPressed: () {
-  //               if (currentSalary.index(index).isFinished) {
-  //                 //no se puede borrar si esta activo
-  //                 setState(() {
-  //                   currentSalary.remove(index);
-  //                 });
-  //               }
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //     );
-  //   }
-  // }
-
-  // Widget _buildListView() {
-  //   // List<Widget> _salaryWidgets;
-  //   _salaryWidgets = List<Widget>.generate(
-  //     currentSalary.length(),
-  //     (int index) => _buildSalaryWidgets(currentSalary, index),
-  //   );
-  //   // _salaryWidgets.insert(
-  //   //     currentSalary.length(),
-  //   //     Padding(
-  //   //       padding: EdgeInsets.all(8),
-  //   //       child: AdmobBanner(
-  //   //         adUnitId: getBannerAdUnitId(),
-  //   //         adSize: AdmobBannerSize.BANNER,
-  //   //       ),
-  //   //     ));
-
-  //   return Expanded(
-  //       child: ListView(
-  //     controller: _scrollController,
-  //     addRepaintBoundaries: true,
-  //     // scrollDirection: Axis.vertical,
-  //     // reverse: true, //la mas nueva arriba
-  //     addAutomaticKeepAlives: true,
-
-  //     shrinkWrap: true,
-  //     // itemCount: currentSalary.length(),
-  //     children: _salaryWidgets,
-  //   ));
-  // }
 }
 
 String getBannerAdUnitId() {
@@ -644,7 +564,7 @@ String getBannerAdUnitId() {
 }
 
 class ShowAdBanner extends StatefulWidget {
-  ShowAdBanner({@required Key key}) : super(key: key);
+  const ShowAdBanner({Key key}) : super(key: key);
 
   @override
   _ShowAdBannerState createState() => _ShowAdBannerState();
