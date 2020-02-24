@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:mi_sueldo/utils/AdmobManager.dart';
 import 'package:mi_sueldo/utils/SharedPreferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,6 +45,7 @@ class _StartingState extends State<Starting> {
     //   //TODO:volver a 3 segundos
     //   Navigator.pushReplacementNamed(context, '/home');
     // });
+    AdmobManager.initAdMob();
 
     // TODO: implement initState
     super.initState();

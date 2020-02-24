@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:mi_sueldo/services/Salary.dart';
@@ -49,20 +48,7 @@ class _HomeState extends State<Home> {
   //!Para el menú
   CustomPopupMenu _selectedChoices = choices[0];
 
-  AdmobInterstitial interstitialAd;
-  AdmobInterstitial _admobInterstitial;
-
-  AdmobInterstitial createAdvert() {
-    return AdmobInterstitial(
-        adUnitId: getInterstitialAdUnitId(),
-        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-          if (event == AdmobAdEvent.loaded) {
-            _admobInterstitial.show();
-          } else if (event == AdmobAdEvent.closed) {
-            _admobInterstitial.dispose();
-          }
-        });
-  }
+  AdmobManager adManager; //para mostrar anuncios
 
   //!Para el menú
   void _select(CustomPopupMenu choice) {
@@ -90,7 +76,7 @@ class _HomeState extends State<Home> {
 
   void updateEverything() {
     print('se llamo al update everything. is working $isWorkingNow');
-    timer = Timer.periodic(Duration(seconds: 2), (t) {
+    timer = Timer.periodic(Duration(seconds: 1), (t) {
       if (salaries.isNotEmpty) {
         if (isWorkingNow) {
           print('isWorkingNow: $isWorkingNow - activeIndex: $activeIndex');
@@ -153,12 +139,14 @@ class _HomeState extends State<Home> {
                 ),
               ),
               Container(
-                  //!Aca se muestra el banner
-                  height: 75,
-                  child: const ShowAdBanner()
+                //!Aca se muestra el banner
+                height: 75,
+                // child: const ShowAdBanner()
+                // child: adManager.getBanner(),
+                child: AdmobManager.banner,
 
-                  // ),
-                  ),
+                // ),
+              ),
             ],
           )),
     );
@@ -207,7 +195,8 @@ class _HomeState extends State<Home> {
                   print('Error: Hay un contador activo en otro salario');
                 } else {
                   if (timesAdSaw == 0 || timesAdSaw % 3 == 0) {
-                    _admobInterstitial.load();
+                    // _admobInterstitial.load();
+                    adManager.loadAdvert();
                   } //mostrar el intestitial
                   timesAdSaw += 1;
 
@@ -558,8 +547,9 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    Admob admob = AdmobManager.initAdMob();
-    _admobInterstitial = createAdvert();
+    adManager = AdmobManager.adManager;
+    adManager.createAdvert(); //se debe iniciar el interstitial
+
     // TODO: implement initState
 
     print('initState');
@@ -585,9 +575,9 @@ class _HomeState extends State<Home> {
   }
 }
 
-getInterstitialAdUnitId() {
-  return 'ca-app-pub-3940256099942544/1033173712';
-}
+// getInterstitialAdUnitId() {
+//   return 'ca-app-pub-3940256099942544/1033173712';
+// }
 
 String getBannerAdUnitId() {
   if (Platform.isIOS) {
@@ -596,61 +586,4 @@ String getBannerAdUnitId() {
     return 'ca-app-pub-3940256099942544/6300978111';
   }
   return null;
-}
-
-class ShowAdBanner extends StatefulWidget {
-  // const ShowAdBanner({@required Key key}) : super(key: key);
-  const ShowAdBanner({Key key}) : super(key: key);
-  @override
-  _ShowAdBannerState createState() => _ShowAdBannerState();
-}
-
-class _ShowAdBannerState extends State<ShowAdBanner> {
-  // final _adBannerKey = UniqueKey(); //para el banner Ad
-
-  @override
-  Widget build(BuildContext context) {
-    return AdmobBanner(
-        // key: _adBannerKey,
-        adUnitId: getBannerAdUnitId(),
-        adSize: AdmobBannerSize.BANNER,
-        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-          switch (event) {
-            case AdmobAdEvent.loaded:
-              print('Admob banner loaded!');
-              break;
-
-            case AdmobAdEvent.opened:
-              print('Admob banner opened!');
-              break;
-
-            case AdmobAdEvent.closed:
-              print('Admob banner closed!');
-              break;
-
-            case AdmobAdEvent.failedToLoad:
-              print(
-                  'Admob banner failed to load. Error code: ${args['errorCode']}');
-              break;
-            case AdmobAdEvent.clicked:
-              // TODO: Handle this case.
-              break;
-            case AdmobAdEvent.impression:
-              // TODO: Handle this case.
-              break;
-            case AdmobAdEvent.leftApplication:
-              // TODO: Handle this case.
-              break;
-            case AdmobAdEvent.completed:
-              // TODO: Handle this case.
-              break;
-            case AdmobAdEvent.rewarded:
-              // TODO: Handle this case.
-              break;
-            case AdmobAdEvent.started:
-              // TODO: Handle this case.
-              break;
-          }
-        });
-  }
 }

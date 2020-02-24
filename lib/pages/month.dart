@@ -393,7 +393,7 @@ class _MonthState extends State<Month> {
     moveListItemToTop(_scrollController);
     SchedulerBinding.instance.addPostFrameCallback((_) {
       salaryPerHour = currentSalary.last().salaryPerHour;
-      _cantDailySalary = currentSalary.length();
+      // _cantDailySalary = currentSalary.length();
       // _salaryWidgets = List<Widget>.generate(
       //   currentSalary.length(),
       //   (int index) => _buildSalaryWidgets(currentSalary, index),
