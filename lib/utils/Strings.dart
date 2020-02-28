@@ -36,7 +36,7 @@ Con el botón “+” en la esquina inferior derecha podes crear un nuevo salari
 
 Una vez creado un nuevo salario podes acceder al mismo clickeando sobre él.
 
-Si lo deseas, podes eliminar un salario presionando prolongadamente sobre el mismo.
+Si lo deseas, podes eliminar un salario presionando prolongadamente sobre el mismo.//TODO:eliminar
 
 Espero que encuentres esta aplicación útil.
 

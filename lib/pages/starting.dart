@@ -39,22 +39,17 @@ class _StartingState extends State<Starting> {
 
   @override
   void initState() {
-    // removeValues('homeHelp');
     setSharedPreferences();
-    // Future.delayed(const Duration(seconds: 0), () {
-    //   //TODO:volver a 3 segundos
-    //   Navigator.pushReplacementNamed(context, '/home');
-    // });
-    AdmobManager.initAdMob();
 
-    // TODO: implement initState
+    AdmobManager.initAdMob(); //se inician los ads
+
     super.initState();
   }
 
   void setSharedPreferences() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    // sharedPreferences.remove('monthHelp');
+    // sharedPreferences.remove('monthHelp');//!esto es para testear
     // sharedPreferences.remove('homeHelp');
     // sharedPreferences.remove('index');
     // sharedPreferences.remove('wasStarted');
@@ -83,7 +78,6 @@ class _StartingState extends State<Starting> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 }

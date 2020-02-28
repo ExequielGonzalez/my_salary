@@ -12,9 +12,9 @@ import 'package:share/share.dart';
 import 'package:mi_sueldo/utils/AdmobManager.dart';
 
 class Home extends StatefulWidget {
-  final _adKey = GlobalKey(); //para el banner Ad
+  // final _adKey = GlobalKey(); //para el banner Ad
   @override
-  GlobalKey key = GlobalKey();
+  // GlobalKey key = GlobalKey();
   _HomeState createState() => _HomeState();
 }
 
@@ -116,12 +116,9 @@ class _HomeState extends State<Home> {
             ),
           ),
           appBar: AppBar(
-            // elevation: 6,
-            // backgroundColor: Colors.redAccent,
-            // backgroundColor: Theme.of(context).primaryColorDark,
             title: const Text(
               'Mi Sueldo',
-              // style: Theme.of(context).textTheme.headline,
+              style: TextStyle(fontFamily: 'RobotoSlab'),
             ),
             centerTitle: true,
             actions: <Widget>[
@@ -194,9 +191,10 @@ class _HomeState extends State<Home> {
                   //si hay un contador activo, pero en otro salario
                   print('Error: Hay un contador activo en otro salario');
                 } else {
-                  if (timesAdSaw == 0 || timesAdSaw % 3 == 0) {
-                    // _admobInterstitial.load();
-                    adManager.loadAdvert();
+                  if (timesAdSaw % 2 == 0 && timesAdSaw != 0 ||
+                      timesAdSaw == 1) {
+                    adManager.loadAdvert(); //!Se crea el interstitial
+                    timesAdSaw = timesAdSaw % 10;
                   } //mostrar el intestitial
                   timesAdSaw += 1;
 
@@ -220,26 +218,44 @@ class _HomeState extends State<Home> {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      flex: 3,
+                      //horas totales y salario total
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: <Widget>[
+                            // Text(''),
+                            Text(
+                                'Horas Totales: ${(index == activeIndex) ? currentTimeWorked : salaries[index].getTotalTimeWorked()}'),
+                            Text(
+                                'Salario Total: \$${(index == activeIndex) ? currentSalaryReceived : salaries[index].totalSalary.toString()}')
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      //Mostrar titulo y descripcion
+                      flex: 4,
                       child: ListTile(
-                        title: Text(salaries[index].title),
+                        title: Text(salaries[index].title,
+                            style: Theme.of(context).textTheme.headline5),
                         // onTap:
-                        subtitle: Text(salaries[index].description),
+                        subtitle: Text(
+                          salaries[index].description,
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
                         // onLongPress:
                       ),
                     ),
                     Expanded(
                       flex: 1,
-                      child: Column(
-                        children: <Widget>[
-                          // Text(''),
-                          Text(
-                              'Horas totales: ${(index == activeIndex) ? currentTimeWorked : salaries[index].getTotalTimeWorked()}'),
-                          Text(
-                              'Salario Total: \$${(index == activeIndex) ? currentSalaryReceived : salaries[index].totalSalary.toString()}')
-                        ],
+                      child: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          _deleteSalary(index);
+                        },
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -270,7 +286,7 @@ class _HomeState extends State<Home> {
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                         labelText: 'Título',
-                        labelStyle: Theme.of(context).textTheme.subhead,
+                        labelStyle: Theme.of(context).textTheme.subtitle1,
                       ),
                     ),
                   ),
@@ -285,7 +301,7 @@ class _HomeState extends State<Home> {
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                         labelText: 'Descripción',
-                        labelStyle: Theme.of(context).textTheme.subhead,
+                        labelStyle: Theme.of(context).textTheme.subtitle1,
                       ),
                     ),
                   ),
@@ -414,8 +430,8 @@ class _HomeState extends State<Home> {
         // return object of type Dialog
         return AlertDialog(
           title: const Text("Error: No se puede eliminar"),
-          content: new Text(
-              'No se puede eliminar "${salaries[activeIndex].title}" ya que en el hay un contador activo. Por favor termine ese antes de eliminarlo.'),
+          content: Text(
+              'No se puede eliminar "${salaries[activeIndex].title}" ya que en el hay un contador activo. Por favor termine este antes de eliminarlo.'),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -534,14 +550,23 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void moveListItemToActive(_scrollController) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      print('active index: $activeIndex');
+
+      _scrollController.animateTo(
+        activeIndex * 100.0,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    });
+  }
+
   share(context) {
     // final RenderBox box = context.findRenderObject();
     final String link = 'https://cutt.ly/miSueldo';
     Share.share(
       '¡Proba la nueva version de Mi sueldo(v$version)! \nDescargala ya desde: $link',
-      // subject:
-      //     'https://frputneduar-my.sharepoint.com/:u:/g/personal/exequielgonzalez_alu_frp_utn_edu_ar/ESSsCaZroy9LgljuCicnnIIBGd0DiY2JoiEYiM_rjau_ng?e=9wOvey',
-      // sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size,
     );
   }
 
@@ -549,8 +574,6 @@ class _HomeState extends State<Home> {
   void initState() {
     adManager = AdmobManager.adManager;
     adManager.createAdvert(); //se debe iniciar el interstitial
-
-    // TODO: implement initState
 
     print('initState');
     // addIntToSharedPreference('index', 0);
@@ -561,6 +584,7 @@ class _HomeState extends State<Home> {
       currentSalaryReceived = salaries[activeIndex].getTotalSalary().toString();
       currentTimeWorked = salaries[activeIndex].getTotalTimeWorked();
       moveListItemToTop(_scrollController);
+      // moveListItemToActive(_scrollController);
     } else
       addIntToSharedPreference('index', 0);
 

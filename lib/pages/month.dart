@@ -12,7 +12,7 @@ import 'package:mi_sueldo/utils/Strings.dart';
 import 'package:mi_sueldo/utils/AdmobManager.dart';
 
 class Month extends StatefulWidget {
-  final _adKey = UniqueKey(); //para el banner Ad
+  // final _adKey = UniqueKey(); //para el banner Ad
 
   @override
   _MonthState createState() => _MonthState();
@@ -40,8 +40,6 @@ class _MonthState extends State<Month> {
   //variable usada para saber si la app se cerró mientras contaba
 
   bool showMonthHelp = true;
-
-  int _cantDailySalary;
 
   ScrollController _scrollController =
       new ScrollController(); //para poner la list siempre on top cuando hay un nuevo item
@@ -138,16 +136,6 @@ class _MonthState extends State<Month> {
                     );
                 },
                 itemBuilder: (context, index) {
-                  // if (index % 2 == 0) {
-                  //   Padding(
-                  //     padding: EdgeInsets.all(8),
-                  //     child: AdmobBanner(
-                  //       adUnitId: getBannerAdUnitId(),
-                  //       adSize: AdmobBannerSize.BANNER,
-                  //     ),
-                  //   );
-                  // }
-                  // TODO:metodo para mostrar los ingresos diarios
                   return Card(
                     child: Row(
                       children: <Widget>[
@@ -162,7 +150,6 @@ class _MonthState extends State<Month> {
                         Expanded(
                           child: ListTile(
                             //  onTap: ,no es necesario que hagan nada cuando se presionen
-                            // title: Text('${incomes[index].currentDate}'),
                             title: Text(
                                 '${currentSalary.index(index).currentDate}'),
                             subtitle: Text(
@@ -235,7 +222,7 @@ class _MonthState extends State<Month> {
                         decoration: InputDecoration(
                             // icon: Icon(Icons.monetization_on),
                             // hintText: '${currentSalary.last().salaryPerHour}',
-                            hintText: '${salaryPerHour}',
+                            hintText: '$salaryPerHour',
                             helperText: 'Salario por hora',
                             helperStyle: Theme.of(context).textTheme.caption,
                             border: OutlineInputBorder()),
@@ -282,7 +269,6 @@ class _MonthState extends State<Month> {
   }
 
   Widget _updateInfoSalary(context, String toShow) {
-    //TODO: IMPLEMENTAR
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -323,7 +309,7 @@ class _MonthState extends State<Month> {
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
                         labelText: '$toShow',
-                        labelStyle: Theme.of(context).textTheme.subhead,
+                        labelStyle: Theme.of(context).textTheme.subtitle1,
                       ),
                     ),
                   ),
@@ -384,23 +370,14 @@ class _MonthState extends State<Month> {
 
   @override
   void initState() {
-    Admob admob = AdmobManager.initAdMob();
-
-    //    startStop = currentSalary.last().isFinished ? 'Empezar' : 'Finalizar';
-    // print('InitState');
-    checkSharedPreferences();
-    // SchedulerBinding.instance.addPostFrameCallback((_) {
-    moveListItemToTop(_scrollController);
+    checkSharedPreferences(); //se lee lo guardado en shared preferences
+    moveListItemToTop(
+        _scrollController); //esto hace que se mueva la lista hasta el ultimo elemento
     SchedulerBinding.instance.addPostFrameCallback((_) {
+      //cuando termina el build method
       salaryPerHour = currentSalary.last().salaryPerHour;
-      // _cantDailySalary = currentSalary.length();
-      // _salaryWidgets = List<Widget>.generate(
-      //   currentSalary.length(),
-      //   (int index) => _buildSalaryWidgets(currentSalary, index),
-      // );
     });
 
-    // });
     super.initState();
   }
 
@@ -505,12 +482,7 @@ class _MonthState extends State<Month> {
       child: Center(
         child: Text(
           'Total: \$${currentSalary.totalSalary.toString()}',
-          style: Theme.of(context).textTheme.title,
-          // style: TextStyle(
-          // letterSpacing: 2,
-          // color: Colors.black,
-          // fontSize: 20,
-          // ),
+          style: Theme.of(context).textTheme.headline6,
         ),
       ),
     );
@@ -547,9 +519,7 @@ class _MonthState extends State<Month> {
           addBoolToSharedPreference('wasStarted', false);
         }
       },
-      child:
-          Text(startStop), //TODO: cambiar por el metodo empezar del a page home
-      //!revisar en el github, la primer version
+      child: Text(startStop),
     );
   }
 }

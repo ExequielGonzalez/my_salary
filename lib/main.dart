@@ -1,11 +1,9 @@
 import 'dart:io';
 
 /** 
-//TODO: Dark mode
 //TODO: Poder tener mas de un contador activo, aunque solo uno por salario
 //TODO: exportar a CSV la informacion
 */
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 
 import 'package:hive/hive.dart';
@@ -65,6 +63,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: _buildTheme(),
       // initialRoute: '/',
       routes: {
@@ -98,7 +97,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   ThemeData _buildTheme() {
-    final ThemeData base = ThemeData.dark();
+    final ThemeData base =
+        ThemeData(brightness: Brightness.dark, fontFamily: 'RobotoSlab');
+
     return base.copyWith(
       textTheme: _buildMyTextTheme(base.textTheme),
       primaryTextTheme: _buildMyTextTheme(base.primaryTextTheme),
@@ -115,7 +116,7 @@ class _MyAppState extends State<MyApp> {
         elevation: 6,
         color: Colors.grey[900],
         textTheme: TextTheme(
-          title: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w500),
+          headline6: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w500),
         ),
       ),
       cardTheme: CardTheme(
@@ -133,16 +134,16 @@ class _MyAppState extends State<MyApp> {
   TextTheme _buildMyTextTheme(TextTheme base) {
     return base
         .copyWith(
-          headline: base.headline
+          headline5: base.headline5
               .copyWith(fontSize: 20.0, fontWeight: FontWeight.w500),
-          title: base.title.copyWith(
-              fontSize: 18.0, fontWeight: FontWeight.w400, letterSpacing: 2),
-          subhead: base.subhead
+          headline6: base.headline6.copyWith(
+              fontSize: 18.0, fontWeight: FontWeight.w400, letterSpacing: 1.5),
+          subtitle1: base.subtitle1
               .copyWith(fontSize: 16.0, fontWeight: FontWeight.w400),
-          body1:
-              base.body1.copyWith(fontSize: 14.0, fontWeight: FontWeight.w400),
-          body2:
-              base.body2.copyWith(fontSize: 14.0, fontWeight: FontWeight.w500),
+          bodyText2: base.bodyText2
+              .copyWith(fontSize: 14.0, fontWeight: FontWeight.w400),
+          bodyText1: base.bodyText1
+              .copyWith(fontSize: 14.0, fontWeight: FontWeight.w500),
           caption: base.caption.copyWith(
             fontWeight: FontWeight.w400,
             fontSize: 12.0,
