@@ -97,13 +97,15 @@ class _MonthState extends State<Month> {
             Container(
               width: width * 0.95,
               height: height * 0.07,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: _labelTotalSalay(context),
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: _labelTotalSalay(context),
+                ),
               ),
             ),
             Divider(
-              height: 50,
+              height: 10,
               color: Theme.of(context).accentColor,
             ),
 
@@ -122,13 +124,8 @@ class _MonthState extends State<Month> {
                 separatorBuilder: (context, index) {
                   if (index % 4 == 0 && index != 0) {
                     return Padding(
-                        padding: EdgeInsets.all(8),
-                        // child: ShowAdBanner(key: widget._adKey),
-                        child: const ShowAdBanner()
-                        // child: AdmobBanner(
-                        //   adUnitId: getBannerAdUnitId(),
-                        //   adSize: AdmobBannerSize.BANNER,
-                        // ),
+                        padding: EdgeInsets.all(8),                
+                        child: const ShowAdBanner()                      
                         );
                   } else
                     return Container(

@@ -157,113 +157,155 @@ class _HomeState extends State<Home> {
       addAutomaticKeepAlives: true,
       reverse: false,
       shrinkWrap: true,
-      itemCount: salaries.length,
+      // itemExtent: 200,
+      // addSemanticIndexes: false,
+      // cacheExtent: 200,
+      // primary: true,
+      // semanticChildCount: 5,
+      itemCount: salaries.length + 1,
       itemBuilder: (context, index) {
         // focusColor(index);
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(4, 3, 4, 0),
-          child: Card(
-            elevation: (index == activeIndex && isWorkingNow == true) ? 24 : 6,
-
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: (index == activeIndex && isWorkingNow == true)
-                    ? Theme.of(context).accentColor
-                    : Theme.of(context).cardColor,
-                width: 1,
-              ),
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(12.0),
-              ),
-            ),
-            // color: (index == activeIndex && isWorkingNow == true)
-            //     ? Theme.of(context).accentColor
-            //     : Theme.of(context).cardColor,
-            child: InkWell(
-              highlightColor: Theme.of(context).accentColor,
-
-              onLongPress: () {
-                _deleteSalary(index);
-              }, //!************Borrar Ingresos***************!
-              onTap: () async {
-                if (index != activeIndex && isWorkingNow) {
-                  _errorActiveCounter();
-                  //si hay un contador activo, pero en otro salario
-                  print('Error: Hay un contador activo en otro salario');
-                } else {
-                  if (timesAdSaw % 2 == 0 && timesAdSaw != 0 ||
-                      timesAdSaw == 1) {
-                    adManager.loadAdvert(); //!Se crea el interstitial
-                    timesAdSaw = timesAdSaw % 10;
-                  } //mostrar el intestitial
-                  timesAdSaw += 1;
-
-                  addIntToSharedPreference('index', index);
-                  dynamic result = await Navigator.of(
-                          context) //se va a month con el salario elegido
-                      .pushNamed('/month', arguments: salaries[index]);
-                  salaries[index] =
-                      result; //con esta linea se recibe lo de la page month
-                  updateDataBase(index, salaries[index]);
-                  checkSharedPreferences();
-                  setState(() {
-                    currentSalaryReceived =
-                        salaries[activeIndex].getTotalSalary().toString();
-                    currentTimeWorked =
-                        salaries[activeIndex].getTotalTimeWorked();
-                  });
-                }
-              },
+        if (index < salaries.length) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(4, 3, 4, 0),
+            child: Card(
+              // elevation: (index == activeIndex && isWorkingNow == true) ? 24 : 6,
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(
+                    color: (index == activeIndex && isWorkingNow == true)
+                        ? Theme.of(context).accentColor
+                        : Theme.of(context).cardColor,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(12)),
+              // color: (index == activeIndex && isWorkingNow == true)
+              //     ? Theme.of(context).accentColor
+              //     : Theme.of(context).cardColor,
               child: Container(
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      //horas totales y salario total
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: <Widget>[
-                            // Text(''),
-                            Text(
-                                'Horas Totales: ${(index == activeIndex) ? currentTimeWorked : salaries[index].getTotalTimeWorked()}'),
-                            Text(
-                                'Salario Total: \$${(index == activeIndex) ? currentSalaryReceived : salaries[index].totalSalary.toString()}')
-                          ],
+                // color: Colors.transparent,
+                // decoration: decorationCard(),
+                child: InkWell(
+                  highlightColor: Theme.of(context).accentColor,
+
+                  onLongPress: () {
+                    _deleteSalary(index);
+                  }, //!************Borrar Ingresos***************!
+                  onTap: () async {
+                    if (index != activeIndex && isWorkingNow) {
+                      _errorActiveCounter();
+                      //si hay un contador activo, pero en otro salario
+                      print('Error: Hay un contador activo en otro salario');
+                    } else {
+                      if (timesAdSaw % 2 == 0 && timesAdSaw != 0 ||
+                          timesAdSaw == 1) {
+                        adManager.loadAdvert(); //!Se crea el interstitial
+                        timesAdSaw = timesAdSaw % 10;
+                      } //mostrar el intestitial
+                      timesAdSaw += 1;
+
+                      addIntToSharedPreference('index', index);
+                      dynamic result = await Navigator.of(
+                              context) //se va a month con el salario elegido
+                          .pushNamed('/month', arguments: salaries[index]);
+                      salaries[index] =
+                          result; //con esta linea se recibe lo de la page month
+                      updateDataBase(index, salaries[index]);
+                      checkSharedPreferences();
+                      setState(() {
+                        currentSalaryReceived =
+                            salaries[activeIndex].getTotalSalary().toString();
+                        currentTimeWorked =
+                            salaries[activeIndex].getTotalTimeWorked();
+                      });
+                    }
+                  },
+                  child: Container(
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          //horas totales y salario total
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: <Widget>[
+                                // Text(''),
+                                Text(
+                                    'Horas Totales: ${(index == activeIndex) ? currentTimeWorked : salaries[index].getTotalTimeWorked()}'),
+                                Text(
+                                    'Salario Total: \$${(index == activeIndex) ? currentSalaryReceived : salaries[index].totalSalary.toString()}')
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      //Mostrar titulo y descripcion
-                      flex: 4,
-                      child: ListTile(
-                        title: Text(salaries[index].title,
-                            style: Theme.of(context).textTheme.headline5),
-                        // onTap:
-                        subtitle: Text(
-                          salaries[index].description,
-                          style: Theme.of(context).textTheme.bodyText2,
+                        Expanded(
+                          //Mostrar titulo y descripcion
+                          flex: 4,
+                          child: ListTile(
+                            title: Text(salaries[index].title,
+                                style: Theme.of(context).textTheme.headline5),
+                            // onTap:
+                            subtitle: Text(
+                              salaries[index].description,
+                              style: Theme.of(context).textTheme.bodyText2,
+                              textAlign: TextAlign.justify,
+                            ),
+                            // onLongPress:
+                          ),
                         ),
-                        // onLongPress:
-                      ),
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              _deleteSalary(index);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          _deleteSalary(index);
-                        },
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
+        } else
+          return Container(
+            height: 100,
+          );
       },
     );
+  }
+
+  BoxDecoration decorationCard() {
+    return BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black,
+              offset: Offset(-4, -4),
+              blurRadius: 15,
+              spreadRadius: 1),
+          BoxShadow(
+              color: Colors.grey[800],
+              offset: Offset(4, 4),
+              blurRadius: 15,
+              spreadRadius: 1),
+        ],
+        gradient: LinearGradient(
+            end: Alignment.topCenter,
+            begin: Alignment.bottomCenter,
+            colors: [
+              Colors.grey[900],
+              Colors.grey[800],
+              Colors.grey[800],
+              Colors.grey[900],
+            ],
+            stops: [
+              0.1,
+              0.3,
+              0.8,
+              1
+            ]));
   }
 
   Widget _createNewSalary() {

@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
 
   ThemeData _buildTheme() {
     final ThemeData base =
-        ThemeData(brightness: Brightness.dark, fontFamily: 'RobotoSlab');
+        ThemeData(brightness: Brightness.dark, fontFamily: 'NotoSans');
 
     return base.copyWith(
       textTheme: _buildMyTextTheme(base.textTheme),
@@ -140,8 +140,8 @@ class _MyAppState extends State<MyApp> {
               fontSize: 18.0, fontWeight: FontWeight.w400, letterSpacing: 1.5),
           subtitle1: base.subtitle1
               .copyWith(fontSize: 16.0, fontWeight: FontWeight.w400),
-          bodyText2: base.bodyText2
-              .copyWith(fontSize: 14.0, fontWeight: FontWeight.w400),
+          bodyText2: base.bodyText2.copyWith(
+              fontSize: 14.0, fontWeight: FontWeight.w400, letterSpacing: 0.8),
           bodyText1: base.bodyText1
               .copyWith(fontSize: 14.0, fontWeight: FontWeight.w500),
           caption: base.caption.copyWith(
